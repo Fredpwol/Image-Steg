@@ -53,7 +53,6 @@ def encode_image(image, height, width, text_encoded):
 					text_encoded = text_encoded[2:]
 				else:
 					return img_copy
-		print(i)
 	return img_copy
 
 def get_data_len(image):
