@@ -147,9 +147,6 @@ def main():
             raise FileNotFoundError
     else:
         print("Please specify a mode!")
-    # bins = return_binary("Hello my name is Fredick i am a boy and i suck at evrything call me for mental health disorder isssues on +2358057695833 shi!!")
-    # print(bins)
-    # print(f"value in ascii is => {decode_binary_to_ascii(bins)}")
 
 if __name__ == '__main__':
     main()
