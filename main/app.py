@@ -130,7 +130,6 @@ def main():
 	if args.mode:
 		if args.image_dir:
 			im_arr, height, width = load_image(args.image_dir)
-			print(im_arr.shape)
 			if args.mode == "encode":
 				text = args.text
 				if args.directory:
