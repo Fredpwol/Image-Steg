@@ -56,9 +56,8 @@ def encode_image(image, height, width, text_encoded):
 					return img_copy
 	return img_copy
 
-def get_data_len(image):
-	_range = image[0][:6]
-	print(_range)
+def get_data_len(image, num_channel):
+	_range = image[0][:(32 // (num_channel * 2) + 1)] #add i pixel to catch overlap
 	res = ""
 	count = 0
 	for i in range(len(_range)):
@@ -72,13 +71,14 @@ def get_data_len(image):
 	dec = eval(f"0b{res}")
 	return dec
 
-def get_encoding_type(image):
-	_range = image[0][5:  ]
+def get_encoding_type(image, num_channel):
+	_range = image[0][(32 // (num_channel * 2)):  ]
+	start_channel = (32 % num_channel) / 2
 	res = ""
 	count = 0
 	for i in range(len(_range)):
 		for j, channel in enumerate(_range[i]):
-			if j == 0 and i == 0: continue # skip overlap by data length bits
+			if  i == 0 and j < start_channel: continue # skip overlap by data length bits
 			if count < 12:
 				res += bin(channel)[2:].zfill(8)[-2:]
 				count += 1
@@ -92,17 +92,18 @@ def get_encoding_type(image):
 
 	
 
-def decode_image(image, height, width):
-	data_len = get_data_len(image)
-	encoding = get_encoding_type(image)
-	print(encoding)
+def decode_image(image, height, width, num_channel):
+	data_len = get_data_len(image, num_channel)
+	encoding = get_encoding_type(image, num_channel)
+	starting_pixel = 56 // (num_channel * 2)
+	start_channel = (56 % num_channel) / 2
 	length = 0
 	res = ""
 	for i in range(height):
-		start = 0 if i != 0 else 9 # skip header pixels
+		start = 0 if i != 0 else starting_pixel # skip header pixels
 		for j in range(start, width):
 			for k, channel in enumerate(image[i][j]):
-				if i == 0 and j == 9 and k == 0: continue # skip encoding overlap bits
+				if i == 0 and j == starting_pixel and k < start_channel: continue # skip encoding overlap bits
 				if length < data_len:
 					res += bin(channel)[2:].zfill(8)[-2:]
 					length += 2
@@ -129,6 +130,7 @@ def main():
 	if args.mode:
 		if args.image_dir:
 			im_arr, height, width = load_image(args.image_dir)
+			print(im_arr.shape)
 			if args.mode == "encode":
 				text = args.text
 				if args.directory:
@@ -147,7 +149,7 @@ def main():
 				Image.fromarray(encoded_image.copy()).save(f"encoded-{filename}.png",)
 			elif args.mode == "decode":
 				# print(im_arr[0][: 6 ])
-				data = decode_image(im_arr, height, width)
+				data = decode_image(im_arr, height, width, im_arr.shape[-1])
 				print(data)
 		else:
 			raise FileNotFoundError
