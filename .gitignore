@@ -1,5 +1,6 @@
 env
 *.png
 *.jpeg
-*.txt
+*.jpeg
+main/*.txt
 .vscode
