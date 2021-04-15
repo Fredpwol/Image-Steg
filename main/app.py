@@ -9,8 +9,6 @@ import copy
 """
 Encoding constants
 """
-XML = "XML"
-JSON = "JSN"
 TXT = "TXT" #done
 PNG = "PNG"
 JPG = "JPG" #work
@@ -18,14 +16,29 @@ WAV = "WAV"
 MP3 = "MP3"
 
 
-def return_binary(string):
+def encode_text_to_binary(string):
     res = ""
     for char in string:
         if type(char) == int: char = chr(char)
         ascii_dec = ord(char)
-        b = bin(ascii_dec)[2:]
-        res += b.zfill(8)
+        res += return_binary(ascii_dec)
     return res
+
+def return_binary(number, bitlen):
+	res = ""
+	b = bin(number)[2:]
+	res += b.zfill(bitlen)
+	return res
+
+
+def encode_image_to_binary(image, height, width, num_channel):
+	res = ""
+	for i in range(height):
+		for j in range(width):
+			for k in range(num_channel):
+				value = image[i][j][k]
+				res += return_binary(value)
+	return res
 
 def decode_binary_to_ascii(binary):
     res = ""
@@ -57,7 +70,7 @@ def encode_image(image, height, width, text_encoded):
     return img_copy
 
 def get_data_len(image, num_channel):
-    _range = image[0][:(32 // (num_channel * 2) + 1)] #add i pixel to catch overlap
+    _range = image[0][:(32 // (num_channel * 2) + 1)] #add 1 pixel to catch overlap
     res = ""
     count = 0
     for i in range(len(_range)):
@@ -116,6 +129,7 @@ def decode_image(image, height, width, num_channel):
 
     return res
 
+#height, width, channel
 
 def main():
     parser = argparse.ArgumentParser()
@@ -124,23 +138,33 @@ def main():
     encode_parser.add_argument("-d", dest="directory", type=str)
     encode_parser.add_argument("-t", dest="text", type=str, default="")
     encode_parser.add_argument("-i", dest="image_dir", type=str)
-    decode_parser = subparser.add_parser("decode", help="decodes data hidden in image aand prints it.")
+	encode_parser.add_argument("-f", dest="format", type=str)
+    decode_parser = subparser.add_parser("decode", help="decodes data hidden in image and prints it.")
     decode_parser.add_argument("-i", dest="image_dir", type=str)
     args = parser.parse_args()
     if args.mode:
         if args.image_dir:
             im_arr, height, width = load_image(args.image_dir)
             if args.mode == "encode":
-                text = args.text
-                if args.directory:
-                    text = open(args.directory, "rb").read()
-                encoding = TXT
-                text = return_binary(text)
-                bitlen = len(text)
-                # print(bitlen)
-                encoding_bin = return_binary(encoding)
-                bitlen_bin = bin(bitlen)[2:].zfill(32)
-                data = bitlen_bin + encoding_bin + text
+                if args.format == TXT.lower():
+                    text = args.text
+                    if args.directory:
+                        text = open(args.directory, "rb").read()
+                    encoding = TXT
+                    text = encode_text_to_binary(text)
+                    bitlen = len(text)
+                    # print(bitlen)
+                    encoding_bin = encode_text_to_binary(encoding)
+                    bitlen_bin = bin(bitlen)[2:].zfill(32)
+                    data = bitlen_bin + encoding_bin + text
+                elif args.format == PNG.lower() or args.format == JPG.lower():
+                    image_arr, image_height, image_width = load_image(args.directory)
+                    num_channel = image_arr.shape[-1]
+                    image_bits = encode_image_to_binary(image_arr, height, width, num_channel)
+                    bitlen = return_binary(len(image_bits), 32)
+                    format = PNG if args.format == PNG.lower() else JPG
+                    format_bin = encode_text_to_binary(format)
+                    data = bitlen + format_bin + return_binary(image_height, 16) + return_binary(image_width, 16) + return_binary(num_channel, 8) + image_bits
                 encoded_image = encode_image(im_arr, height, width, data)
                 filename = os.path.basename(args.image_dir)
                 filename = filename[:filename.find(".")]
