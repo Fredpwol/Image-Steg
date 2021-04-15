@@ -57,14 +57,16 @@ def load_image(im_dir):
 
 def encode_image(image, height, width, text_encoded):
     img_copy = copy.deepcopy(image)
+    prev_index = 0
+    data_len = len(text_encoded)
     for i in range(height):
         for j in range(width):
             for k, channel in enumerate(img_copy[i][j]):
-                if text_encoded != "":
-                    b = bin(channel)[2:].zfill(8)
-                    dec = eval(f"0b{b[:6]}{text_encoded[:2]}")
+                if (prev_index + 2) < data_len:
+                    b = return_binary(channel)
+                    dec = eval(f"0b{b[:6]}{text_encoded[prev_index:2+prev_index]}")
                     img_copy[i][j][k] = dec
-                    text_encoded = text_encoded[2:]
+                    prev_index += 2
                 else:
                     return img_copy
     return img_copy
