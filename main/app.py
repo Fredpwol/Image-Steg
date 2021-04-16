@@ -8,16 +8,38 @@ import secrets
 #we use INT32_MAX for our maximum bit length
 
 """
-Encoding constants
+Image Steganography using Lowest Significant Bits (LCB) works by fliping the last two bits of a channel in an Image.
+#TODO: work on Discrete Cosine Transform (DCT) AND huffman encoding.
 """
+
+"""
+Encoding constants
+
+This are header encoding constants which will be used to define what type of data is embeded in the Image.
+"""
+
 TXT = "TXT" #done
 PNG = "PNG" #done
-JPG = "JPG" #work
-WAV = "WAV" #done
-MP3 = "MP3"
+JPG = "JPG" #done
+WAV = "WAV" #work
+MP3 = "MP3" # work
 
 
 def encode_text_to_binary(string):
+    """
+    Returns a string of bits representation of the string.
+    the characters in the string are decomosed to their decimal
+    value on the ASCII table. Then converted to a string of 8bit
+    binary.
+
+    args
+    ----
+        string: str
+    
+    returns
+    -------
+        res: str
+    """
     res = ""
     for char in string:
         if type(char) == int: char = chr(char)
@@ -26,6 +48,17 @@ def encode_text_to_binary(string):
     return res
 
 def return_binary(number, bitlen=8):
+    """
+    returns the binary value of a number.
+
+    args
+    ----
+        number: int
+        bitlen: int
+    returns
+    -------
+        res: str
+    """
     res = ""
     b = bin(number)[2:]
     res += b.zfill(bitlen)
@@ -33,6 +66,9 @@ def return_binary(number, bitlen=8):
 
 
 def encode_image_to_binary(image, height, width, num_channel):
+    """
+    Encodes an Image to binary
+    """
     res = ""
     for i in range(height):
         for j in range(width):
@@ -60,6 +96,7 @@ def encode_image(image, height, width, text_encoded):
     img_copy = copy.deepcopy(image)
     prev_index = 0
     data_len = len(text_encoded)
+    print(data_len)
     for i in range(height):
         for j in range(width):
             for k, channel in enumerate(img_copy[i][j]):
@@ -182,6 +219,7 @@ def main():
     if args.mode:
         if args.image_dir:
             im_arr, height, width = load_image(args.image_dir)
+            print(im_arr.shape)
             if args.mode == "encode":
                 if args.format == TXT.lower():
                     text = args.text
