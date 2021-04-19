@@ -1,3 +1,5 @@
+#!usr/bin/python3
+
 from PIL import Image
 import argparse
 import numpy as np
@@ -78,6 +80,16 @@ def encode_image_to_binary(image, height, width, num_channel):
     return res
 
 def decode_binary_to_ascii(binary):
+    """
+    Returns an ascii string representation of a string of binary
+    args
+    ----
+        binary: str
+        A string of binary e.g 101001 
+    returns
+    -------
+        str
+    """
     res = ""
     for i in range(0, len(binary), 8):
         b = binary[i :i+8]
@@ -87,12 +99,34 @@ def decode_binary_to_ascii(binary):
     return res
 
 def load_image(im_dir):
+    """
+    Loads Image from a directory and returns the array representaion of the image and it's height and width
+    args
+    ----
+        im_dir: str
+        Image local directory
+    returns
+    -------
+        tuple: (np.array, int, int)
+    """
     im = Image.open(im_dir)
     im_arr = np.array(im)
     return im_arr, im.height, im.width
 
 
 def encode_image(image, height, width, text_encoded):
+    """
+    Encodes the a image with a binary string and returns a encoded image array.
+    args
+    ----
+        image: 3D np.array 
+        height: int
+        width: int
+        text_encoded: str
+    returns
+    -------
+        np.array 
+    """
     img_copy = copy.deepcopy(image)
     prev_index = 0
     data_len = len(text_encoded)
@@ -110,6 +144,9 @@ def encode_image(image, height, width, text_encoded):
     return img_copy
 
 def get_data_len(image, num_channel):
+    """
+    gets the data length from header bits.
+    """
     _range = image[0][:(32 // (num_channel * 2) + 1)] #add 1 pixel to catch overlap
     res = ""
     count = 0
