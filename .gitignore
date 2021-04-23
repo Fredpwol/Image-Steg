@@ -4,3 +4,5 @@ env
 *.jpeg
 main/*.txt
 .vscode
+__pycache__
+test_images
