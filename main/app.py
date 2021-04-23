@@ -12,7 +12,7 @@ import secrets
 """
 Image Steganography using Lowest Significant Bits (LCB) works by fliping the last two bits of a channel in an Image.
 #TODO: work on Discrete Cosine Transform (DCT) AND huffman encoding.
-"""
+""" 
 
 """
 Encoding constants
@@ -162,6 +162,9 @@ def get_data_len(image, num_channel):
     return dec
 
 def get_encoding_type(image, num_channel):
+    """
+    retrieve the encoding type of the secret message stored in the Image.
+    """
     _range = image[0][(32 // (num_channel * 2)):  ]
     start_channel = (32 % num_channel) / 2
     res = ""
@@ -181,6 +184,9 @@ def get_encoding_type(image, num_channel):
     return res
 
 def get_image_data(image, starting_pixel, start_channel):
+    """
+    retrieve image data from image i.e height, width, channel
+    """
     _range = image[0][starting_pixel:  ]
     res = ""
     count = 0
@@ -203,6 +209,15 @@ def get_image_data(image, starting_pixel, start_channel):
     
 
 def decode_image(image, height, width, num_channel):
+    """
+    Decodes a Encoded Image and return message.
+    args
+    ----
+        image: encoded image
+        height: encoded image height
+        width: encoded image width
+        num_channel: encoded image number of channels.
+    """
     data_len = get_data_len(image, num_channel)
     encoding = get_encoding_type(image, num_channel)
     starting_pixel = 56 // (num_channel * 2)
