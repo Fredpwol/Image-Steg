@@ -1,19 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Steg</title>
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static//css/index.css">
+    <script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 </head>
+
 <body>
-    <div class="header">
-        <h1>
+    <div class=" flex px-16 py-4 shadow-lg mb-8 bg-blue-400">
+        <h1 class="text-3xl font-bold text-white mr-32">
             Image Steg
         </h1>
+        <div class="flex justify-between w-72 mt-2">
+            <a href="/" class="text-white">
+                Encode
+            </a>
+            <a href="/" class="text-white">
+                Decode
+            </a>
+            <a href="/" class="text-white">
+                Support Us
+            </a>
+        </div>
     </div>
-    {% block body %}
-    {% endblock %}
+    <div class="container p-4">
+        {% block body %}
+        {% endblock %}
+    </div>
+<script src="../static/js/index.js"></script>
 </body>
+
 </html>
