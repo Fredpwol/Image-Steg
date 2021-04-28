@@ -1,19 +1,20 @@
 from flask_wtf import FlaskForm
-from wtforms import TextAreaField, TextField
+from wtforms import TextAreaField, TextField, SubmitField
 from wtforms.validators import Email
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 
 
 class EncodeForm(FlaskForm):
-    file = FileField("Image File",
+    file = FileField("Add Cover Image",
                      validators=[
                          FileRequired(),
                          FileAllowed(["png", "jpg", "jpeg"], "Images Only!")
                      ])
-    message = TextAreaField("Message")
+    message = TextAreaField("Message", description="Enter heidden message")
     message_file = FileField("Hidden Message")
     email = TextAreaField("Email",
                           validators=[Email("Please enter a valid email")])
+    submit = SubmitField("Encode Image")
 
 
 class DecodeForm(FlaskForm):
@@ -24,3 +25,5 @@ class DecodeForm(FlaskForm):
                      ])
     email = TextAreaField("Email",
                           validators=[Email("Please enter a valid email")])
+
+    submit = SubmitField("Decode Image")
