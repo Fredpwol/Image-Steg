@@ -5,6 +5,10 @@
   padding: 20px;
 }
 
+.message-input{
+  height: auto;
+}
+
 .file-upload-btn {
   width: 100%;
   margin: 0;
