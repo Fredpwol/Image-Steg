@@ -25,6 +25,9 @@ WAV = "WAV"  #work
 MP3 = "MP3"  # work
 
 
+def encode_audio_to_binary(audiofile):
+    return NotImplementedError
+
 def encode_text_to_binary(string):
     """
     Returns a string of bits representation of the string.
@@ -111,8 +114,8 @@ def load_image(im_dir):
         tuple: (np.array, int, int)
     """
     im = Image.open(im_dir)
-    im_arr = np.array(im)
-    return im_arr, im.height, im.width
+    cover_image = np.array(im)
+    return cover_image, im.height, im.width
 
 
 def encode_image(image, height, width, text_encoded):
@@ -150,8 +153,7 @@ def get_data_len(image, num_channel):
     """
     gets the data length from header bits.
     """
-    _range = image[0][:(32 // (num_channel * 2) +
-                        1)]  #add 1 pixel to catch overlap
+    _range = image[0][:(32 // (num_channel * 2) + 1)]  #add 1 pixel to catch overlap
     res = ""
     count = 0
     for i in range(len(_range)):
@@ -251,7 +253,7 @@ def decode_image(image, height, width, num_channel):
     if encoding == TXT:
         res = decode_binary_to_ascii(res)
     if encoding == JPG or encoding == PNG:
-        image_arr = np.zeros(
+        _image = np.zeros(
             (hidden_image_height, hidden_image_width, hidden_image_channel),
             dtype=np.uint8)
         prev_index = 0
@@ -260,17 +262,31 @@ def decode_image(image, height, width, num_channel):
             for j in range(hidden_image_width):
                 for k in range(hidden_image_channel):
                     if prev_index + 8 > len(res): break
-                    image_arr[i][j][k] = eval(
+                    _image[i][j][k] = eval(
                         f"0b{res[prev_index:prev_index+8]}")
                     prev_index += 8
-        res = image_arr
-    return res, encoding
+        res = _image
+    return res, 
+    
+def get_bit_space(image, iscover=False):
+    """
+    Calculates the total number of bits in a image and returns it
+    args
+    ----
+        image: image to retrive info
+        is_cover: if image is cover it multiplies by 2. 
+    """
+    n_bit = 2 if iscover else 8
+    return image.shape[0] * image.shape[1] * image.shape[1] * n_bit
 
 
 #height, width, channel
 
 
 def main():
+    """
+    TO add encode images and hide data in it.
+    """
     parser = argparse.ArgumentParser()
     subparser = parser.add_subparsers(dest="mode")
     encode_parser = subparser.add_parser("encode", help="encodes the image")
@@ -284,8 +300,8 @@ def main():
     args = parser.parse_args()
     if args.mode:
         if args.image_dir:
-            im_arr, height, width = load_image(args.image_dir)
-            print(im_arr.shape)
+            cover_image, height, width = load_image(args.image_dir)
+            print(cover_image.shape)
             if args.mode == "encode":
                 if args.format == TXT.lower():
                     text = args.text
@@ -298,34 +314,29 @@ def main():
                     bitlen_bin = return_binary(bitlen, 32)
                     data = bitlen_bin + encoding_bin + text
                 elif args.format == PNG.lower() or args.format == JPG.lower():
-                    assert os.path.getsize(args.directory) < os.path.getsize(
-                        args.image_dir) / 3, "Image file is to large to hide!"
-                    image_arr, image_height, image_width = load_image(
+                    _image, image_height, image_width = load_image(
                         args.directory)
-                    num_channel = image_arr.shape[-1]
-                    image_bits = encode_image_to_binary(
-                        image_arr, image_height, image_width, num_channel)
+                    assert get_bit_space(cover_image, iscover=True) > get_bit_space(_image), "Cover Image bit to small to contain image"
+                    num_channel = _image.shape[-1]
+                    image_bits = encode_image_to_binary(_image, image_height, image_width, num_channel)
                     bitlen = return_binary(len(image_bits), 32)
                     format = PNG if args.format == PNG.lower() else JPG
                     format_bin = encode_text_to_binary(format)
-                    data = bitlen + format_bin + return_binary(
-                        image_height,
-                        16) + return_binary(image_width, 16) + return_binary(
-                            num_channel, 8) + image_bits
+                    data = bitlen + format_bin + return_binary(image_height,16) + return_binary(image_width, 16) + return_binary(num_channel, 8) + image_bits
 
                 else:
                     print("Input a valid format.")
                     return
-                encoded_image = encode_image(im_arr, height, width, data)
+                encoded_image = encode_image(cover_image, height, width, data)
                 filename = os.path.basename(args.image_dir)
                 filename = filename[:filename.find(".")]
-                # print(encoded_image[0][:6], im_arr[0][:6])
+                # print(encoded_image[0][:6], cover_image[0][:6])
                 Image.fromarray(encoded_image.copy()).save(
                     f"encoded-{filename}.png", )
             elif args.mode == "decode":
-                # print(im_arr[0][: 6 ])
-                data, encoding = decode_image(im_arr, height, width,
-                                              im_arr.shape[-1])
+                # print(cover_image[0][: 6 ])
+                data, encoding = decode_image(cover_image, height, width,
+                                              cover_image.shape[-1])
                 print(encoding)
                 if encoding == TXT:
                     print(data)
