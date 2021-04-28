@@ -1,12 +1,29 @@
+import os
 from main import app
 from flask import request, flash, redirect, render_template
 from main.form import EncodeForm, DecodeForm
+from werkzeug.utils import secure_filename
 
-@app.route("/home")
+
+@app.before_first_request
+def check_image_path():
+    if not os.path.exists(os.path.join(app.root_path, "images")):
+        os.mkdir(os.path.join(app.root_path, "images"))
+
+@app.route("/", methods=["GET", "POST"])
 def home():
-    return render_template("index.html")
+    form = EncodeForm(request.form or None)
+    context = {"form" : form}
+    if form.validate_on_submit():
+        print ("Submitted!!")
+        f = form.file.data
+        filename = secure_filename(f.filename)
+        print("Path", os.path.join(app.root_path, "images", filename))
+        return redirect("/")
+        # f.save()
+    return render_template("index.html", **context)
 
-@app.route("/encode", ["GET", "POST"])
+@app.route("/encode", methods=["GET", "POST"])
 def encode_image():
     form = EncodeForm()
     if form.validate_on_submit():
