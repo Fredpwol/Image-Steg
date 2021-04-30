@@ -3,27 +3,49 @@
 {% block body %}
 
 <h2 class="center">
-    Hello Welcome to Image Steg!
+  Hello Welcome to Image Steg!
 </h2>
 <form action="/" method="post" enctype="multipart/form-data">
+  {{ form.hidden_tag() }}
   <div class="file-upload">
-    <button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">{{ form.file.label }}</button>
-  
-    <div class="image-upload-wrap">
-      {{ form.file(class_="file-upload-input", onchange="readURL(this);", accept="image/*") }}
-      <!-- <input class="file-upload-input" type='file' onchange="readURL(this);" accept="image/*" /> -->
-      <div class="drag-text">
-        <h3>Drag and drop a file or select add Image</h3>
+    <button class="file-upload-btn" type="button" onclick="$('.file-upload-input').trigger( 'click' )">{{
+      form.file.label }}</button>
+
+    <div class="mb-8">
+      <div class="image-upload-wrap">
+        {{ form.file(class_="file-upload-input", onchange="readURL(this);", accept="image/*") }}
+        <!-- <input class="file-upload-input" type='file' onchange="readURL(this);" accept="image/*" /> -->
+        <div class="drag-text">
+          <h3>Drag and drop a file or select add Image</h3>
+        </div>
       </div>
-    </div>
-    <div class="file-upload-content">
-      <img class="file-upload-image" src="#" alt="your image" />
-      <div class="image-title-wrap">
-        <button type="button" onclick="removeUpload()" class="remove-image">Remove <span class="image-title">Uploaded Image</span></button>
+      <div class="file-upload-content">
+        <img class="file-upload-image" src="#" alt="your image" />
+        <div class="image-title-wrap">
+          <button type="button" onclick="removeUpload()" class="remove-image">Remove <span class="image-title">Uploaded Image</span></button>
+        </div>
       </div>
     </div>
     {{form.message.label(class_="font-bold text-l")}}
     {{ form.message(class_="container border border-blue-500 rounded-lg p-4 message-input") }}
+    <p>or</p>
+    <div class="mt-4">
+      <div class="image-upload-wrap">
+        {{ form.message_file(class_="file-upload-input", onchange="readURL(this);", accept="image/*") }}
+        <!-- <input class="file-upload-input" type='file' onchange="readURL(this);" accept="image/*" /> -->
+        <div class="drag-text">
+          <h3>Drag and drop a file to Encode it.</h3>
+        </div>
+      </div>
+      <div class="file-upload-content">
+        <img class="file-upload-image" src="#" alt="your image" />
+        <div class="image-title-wrap">
+          <button type="button" onclick="removeUpload()" class="remove-image">Remove <span class="image-title">Uploaded
+              File</span></button>
+        </div>
+      </div>
+    </div>
+    </div>
     <div class="flex justify-center">
       {{ form.submit(class_="bg-blue-500 rounded-xl shadow-l p-4 text-white") }}
     </div>
