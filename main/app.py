@@ -18,6 +18,32 @@ Encoding constants
 This are header encoding constants which will be used to define what type of data is embeded in the Image.
 """
 
+class ImageParser:
+
+    def __init__(self, dir):
+        parsed_image = self.__load_image(dir)
+        self.image = parsed_image[0]
+        self.height = parsed_image[1]
+        self.width = parsed_image[2]
+        self.nchannel = parsed_image[3]
+
+    def __load_image(self, im_dir):
+        """
+        Loads Image from a directory and returns the array representaion of the image and it's height and width
+        args
+        ----
+            im_dir: str
+            Image local directory
+        returns
+        -------
+            tuple: (np.array, int, int)
+        """
+        im = Image.open(im_dir)
+        im_arr = np.array(im)
+        return im_arr, im.height, im.width, im_arr.shape[-1]
+
+    
+
 TXT = "TXT"  #done
 PNG = "PNG"  #done
 JPG = "JPG"  #done
@@ -98,21 +124,6 @@ def decode_binary_to_ascii(binary):
         res += char
     return res
 
-
-def load_image(im_dir):
-    """
-    Loads Image from a directory and returns the array representaion of the image and it's height and width
-    args
-    ----
-        im_dir: str
-        Image local directory
-    returns
-    -------
-        tuple: (np.array, int, int)
-    """
-    im = Image.open(im_dir)
-    im_arr = np.array(im)
-    return im_arr, im.height, im.width
 
 
 def encode_image(image, height, width, text_encoded):
@@ -267,6 +278,11 @@ def decode_image(image, height, width, num_channel):
     return res, encoding
 
 
+def get_image_bit_len(height, width, nchannel, iscover=False):
+    num_bit = 2 if iscover else 8
+
+    return height * width * nchannel * num_bit
+
 #height, width, channel
 
 
@@ -278,8 +294,7 @@ def main():
     encode_parser.add_argument("-t", dest="text", type=str, default="")
     encode_parser.add_argument("-i", dest="image_dir", type=str)
     encode_parser.add_argument("-f", dest="format", type=str)
-    decode_parser = subparser.add_parser(
-        "decode", help="decodes data hidden in image and prints it.")
+    decode_parser = subparser.add_parser("decode", help="decodes data hidden in image and prints it.")
     decode_parser.add_argument("-i", dest="image_dir", type=str)
     args = parser.parse_args()
     if args.mode:
@@ -298,21 +313,14 @@ def main():
                     bitlen_bin = return_binary(bitlen, 32)
                     data = bitlen_bin + encoding_bin + text
                 elif args.format == PNG.lower() or args.format == JPG.lower():
-                    assert os.path.getsize(args.directory) < os.path.getsize(
-                        args.image_dir) / 3, "Image file is to large to hide!"
-                    image_arr, image_height, image_width = load_image(
-                        args.directory)
+                    image_arr, image_height, image_width = load_image(args.directory)
+                    assert get_image_bit_len(im_arr.shape[0], im_arr.shape[1], im_arr.shape[2], True) > get_image_bit_len(image_arr.shape[0], image_arr.shape[1], image_arr.shape[2]), "Image file is to large to hide!"
                     num_channel = image_arr.shape[-1]
-                    image_bits = encode_image_to_binary(
-                        image_arr, image_height, image_width, num_channel)
+                    image_bits = encode_image_to_binary(image_arr, image_height, image_width, num_channel)
                     bitlen = return_binary(len(image_bits), 32)
                     format = PNG if args.format == PNG.lower() else JPG
                     format_bin = encode_text_to_binary(format)
-                    data = bitlen + format_bin + return_binary(
-                        image_height,
-                        16) + return_binary(image_width, 16) + return_binary(
-                            num_channel, 8) + image_bits
-
+                    data = bitlen + format_bin + return_binary(image_height, 16) + return_binary(image_width, 16) + return_binary(num_channel, 8) + image_bits
                 else:
                     print("Input a valid format.")
                     return
