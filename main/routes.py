@@ -12,14 +12,15 @@ def check_image_path():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    form = EncodeForm(request.form or None)
+    form = EncodeForm(request.form)
     context = {"form" : form}
-    if form.validate_on_submit():
-        print ("Submitted!!")
-        f = form.file.data
-        filename = secure_filename(f.filename)
-        print("Path", os.path.join(app.root_path, "images", filename))
-        return redirect("/")
+    if request.method.lower() == "post":
+        print(form.is_submitted(), "submitted", form.validate(),)
+        # print ("Submitted!!")
+        # f = form.file.data
+        # filename = secure_filename(f.filename)
+        # print("Path", os.path.join(app.root_path, "images", filename))
+        # return redirect("/")
         # f.save()
     return render_template("index.html", **context)
 
