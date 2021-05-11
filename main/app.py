@@ -30,6 +30,7 @@ class ImageParser:
     def __init__(self, dir):
         parsed_image = self.__load_image(dir)
         self.image = parsed_image[0]
+        self.dir = dir
         self.height = parsed_image[1]
         self.width = parsed_image[2]
         self.nchannel = parsed_image[3]
@@ -70,7 +71,7 @@ class ImageParser:
         for char in string:
             if type(char) == int: char = chr(char)
             ascii_dec = ord(char)
-            res += return_binary(ascii_dec)
+            res += self.__return_binary(ascii_dec)
         return res
     
     @staticmethod
@@ -89,7 +90,7 @@ class ImageParser:
         res = ""
         b = bin(number)[2:]
         res += b.zfill(bitlen)
-    return res
+        return res
 
 
     def __encode_image_to_binary(self, image, height, width, num_channel):
@@ -101,7 +102,7 @@ class ImageParser:
             for j in range(width):
                 for k in range(num_channel):
                     value = image[i][j][k]
-                    res += return_binary(value)
+                    res += self.__return_binary(value)
         return res
 
     
@@ -143,9 +144,9 @@ class ImageParser:
             for j in range(self.width):
                 for k, channel in enumerate(img_copy[i][j]):
                     if (prev_index + 2) < data_len:
-                        b = return_binary(channel)
+                        b = self.__return_binary(channel)
                         dec = eval(
-                            f"0b{b[:6]}{text_encoded[prev_index:2+prev_index]}")
+                            f"0b{b[:6]}{bitstream[prev_index:2+prev_index]}")
                         img_copy[i][j][k] = dec
                         prev_index += 2
                     else:
@@ -164,7 +165,7 @@ class ImageParser:
         for i in range(len(_range)):
             for channel in _range[i]:
                 if count < 16:
-                    res += return_binary(channel)[-2:]
+                    res += self.__return_binary(channel)[-2:]
                     # print(res)
                     count += 1
                 else:
@@ -177,7 +178,7 @@ class ImageParser:
         """
         retrieve the encoding type of the secret message stored in the Image.
         """
-        _range = image[0][(32 // (self.nchannel * 2)):]
+        _range = self.image[0][(32 // (self.nchannel * 2)):]
         start_channel = (32 % self.nchannel) / 2
         res = ""
         count = 0
@@ -186,14 +187,14 @@ class ImageParser:
                 if i == 0 and j < start_channel:
                     continue  # skip overlap by data length bits
                 if count < 12:
-                    res += return_binary(channel)[-2:]
+                    res += self.__return_binary(channel)[-2:]
                     count += 1
                 else:
                     break
             if count >= 12:
                 break
 
-        res = decode_binary_to_ascii(res)
+        res = self.__decode_binary_to_ascii(res)
         return res
 
 
@@ -201,8 +202,7 @@ class ImageParser:
         return NotImplementedError
 
 
-    @staticmethod
-    def __get_image_data(image, starting_pixel, start_channel):
+    def __get_image_data(self, image, starting_pixel, start_channel):
         """
         retrieve image data from image i.e height, width, channel
         """
@@ -214,7 +214,7 @@ class ImageParser:
                 if i == 0 and j < start_channel:
                     continue  # skip overlap by data length bits
                 if count < 40:
-                    res += return_binary(channel)[-2:]
+                    res += self.__return_binary(channel)[-2:]
                     count += 2
                 else:
                     break
@@ -230,19 +230,19 @@ class ImageParser:
         """
         Decodes a Encoded Image and return message.
         """
-        starting_pixel = 56 // (num_channel * 2)
-        start_channel = (56 % num_channel) / 2
+        starting_pixel = 56 // (self.nchannel * 2)
+        start_channel = (56 % self.nchannel) / 2
         if self.encoding_type == PNG or self.encoding_type == JPG:
             hidden_image_height, hidden_image_width, hidden_image_channel = self.__get_image_data(
-                image, starting_pixel, start_channel)
-            starting_pixel = (56 + 40) // (num_channel * 2)
-            start_channel = ((56 + 40) % num_channel) / 2
+                self.image, starting_pixel, start_channel)
+            starting_pixel = (56 + 40) // (self.nchannel * 2)
+            start_channel = ((56 + 40) % self.nchannel) / 2
         length = 0
         res = ""
-        for i in range(height):
+        for i in range(self.height):
             start = 0 if i != 0 else starting_pixel  # skip header pixels
-            for j in range(start, width):
-                for k, channel in enumerate(image[i][j]):
+            for j in range(start, self.width):
+                for k, channel in enumerate(self.image[i][j]):
                     if i == 0 and j == starting_pixel and k < start_channel:
                         continue  # skip encoding overlap bits
                     if length < self.data_len:
@@ -253,7 +253,7 @@ class ImageParser:
                 if length >= self.data_len: break
             if length >= self.data_len: break
         if self.encoding_type == TXT:
-            res = decode_binary_to_ascii(res)
+            res = self.__decode_binary_to_ascii(res)
         if self.encoding_type == JPG or self.encoding_type == PNG:
             _image = np.zeros(
                 (hidden_image_height, hidden_image_width, hidden_image_channel),
@@ -289,50 +289,49 @@ class ImageParser:
         return height * width * nchannel * num_bit
 
 
-    @staticmethod
-    def compare_image_bitspace(im1, im2):
+    def compare_image_bitspace(self, im1, im2):
         return self.__get_image_bit_len(im1.shape[0], im1.shape[1], im1.shape[2], True) > self.__get_image_bit_len(im2.shape[0], im2.shape[1], im2.shape[2])
 
 
-    def encode(self, image, format, message_data):
+    def encode(self, format, message_data):
         """
         message_data: str, dir_to_image
         """
-        if format == TXT):
+        if format == TXT:
             encoding = TXT
             text = self.__encode_text_to_binary(message_data)
             bitlen = len(text)
             encoding_bin = self.__encode_text_to_binary(encoding)
             bitlen_bin = self.__return_binary(bitlen, 32)
             data = bitlen_bin + encoding_bin + text
-        elif format == PNG or format == JPG):
+        elif format == PNG or format == JPG:
             message_image, message_image_height, message_image_width, message_image_channels = self.__load_image(message_data)
-            assert self.compare_image_bitspace(image, message_image) , "Image file is to large to hide!"
+            assert self.compare_image_bitspace(self.image, message_image) , "Image file is to large to hide!"
             image_bits = self.__encode_image_to_binary(message_image, message_image_height, message_image_width, message_image_channels)
             bitlen = self.__return_binary(len(image_bits), 32)
             format = PNG if format == PNG else JPG
             format_bin = self.__encode_text_to_binary(format)
-            data = bitlen + format_bin + self.__return_binary(image_height, 16) + \
-            self.__return_binary(image_width, 16) + self.__return_binary(num_channel, 8) + image_bits
+            data = bitlen + format_bin + self.__return_binary(message_image_height, 16) + \
+            self.__return_binary(message_image_width, 16) + self.__return_binary(message_image_channels, 8) + image_bits
         else:
             raise ValueError("Please Enter a valid format")
 
         encoded_image = self.__encode_image(data)
-        filename = os.path.basename(args.image_dir)
+        filename = os.path.basename(self.dir)
         filename = filename[:filename.find(".")]
         # print(encoded_image[0][:6], cover_image[0][:6])
         Image.fromarray(encoded_image.copy()).save(f"encoded-{filename}.png", )
 
         
-        def decode(self):
-            data, encoding = self.__decode_image(cover_image, height, width, cover_image.shape[-1])
-            print(encoding)
-            if encoding == TXT:
-                print(data)
-            elif encoding == JPG or encoding == PNG:
-                # print(data[0][:5])
-                Image.fromarray(data).save(
-                    f"{secrets.token_hex(16)}.{encoding.lower()}")
+    def decode(self):
+        data, encoding = self.__decode_image()
+        print(encoding)
+        if encoding == TXT:
+            print(data)
+        elif encoding == JPG or encoding == PNG:
+            # print(data[0][:5])
+            Image.fromarray(data).save(
+                f"{secrets.token_hex(16)}.{encoding.lower()}")
 
 
 #height, width, channel
@@ -354,9 +353,9 @@ def main():
     args = parser.parse_args()
     if args.mode:
         if args.image_dir:
-            cover_image, height, width = load_image(args.image_dir)
-            print(cover_image.shape)
             if args.mode == "encode":
+                im = ImageParser(args.image_dir)
+                im.encode(args.format.upper(), args.directory )
 
             elif args.mode == "decode":
                 # print(cover_image[0][: 6 ])
