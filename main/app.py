@@ -34,6 +34,8 @@ class ImageParser:
         self.height = parsed_image[1]
         self.width = parsed_image[2]
         self.nchannel = parsed_image[3]
+        self.__encoding = None
+        self.__data_len = None
 
     @staticmethod
     def __load_image(im_dir):
@@ -87,10 +89,8 @@ class ImageParser:
         -------
             res: str
         """
-        res = ""
         b = bin(number)[2:]
-        res += b.zfill(bitlen)
-        return res
+        return b.zfill(bitlen)
 
 
     def __encode_image_to_binary(self, image, height, width, num_channel):
@@ -159,6 +159,8 @@ class ImageParser:
         """
         gets the data length from header bits.
         """
+        if self.__data_len is not None:
+            return self.__data_len
         _range = self.image[0][:(32 // (self.nchannel * 2) + 1)]  #add 1 pixel to catch overlap
         res = ""
         count = 0
@@ -171,6 +173,7 @@ class ImageParser:
                 else:
                     break
         dec = eval(f"0b{res}")
+        self.__data_len = dec
         return dec
 
     @property
@@ -178,6 +181,8 @@ class ImageParser:
         """
         retrieve the encoding type of the secret message stored in the Image.
         """
+        if self.__encoding is not None:
+            return self.__encoding
         _range = self.image[0][(32 // (self.nchannel * 2)):]
         start_channel = (32 % self.nchannel) / 2
         res = ""
@@ -195,6 +200,7 @@ class ImageParser:
                 break
 
         res = self.__decode_binary_to_ascii(res)
+        self.__encoding = res
         return res
 
 
@@ -226,7 +232,7 @@ class ImageParser:
         return (height, width, channel)
 
 
-    def decode_image(self):
+    def __decode_image(self):
         """
         Decodes a Encoded Image and return message.
         """
@@ -246,7 +252,7 @@ class ImageParser:
                     if i == 0 and j == starting_pixel and k < start_channel:
                         continue  # skip encoding overlap bits
                     if length < self.data_len:
-                        res += bin(channel)[2:].zfill(8)[-2:]
+                        res += self.__return_binary(channel)[-2:]
                         length += 2
                     else:
                         break
@@ -268,10 +274,11 @@ class ImageParser:
                             f"0b{res[prev_index:prev_index+8]}")
                         prev_index += 8
             res = _image
-        return res 
+        return res
     
+
     @staticmethod
-    def __get_bit_space(image, iscover=False):
+    def __get_image_bit_len(height, width, nchannel, iscover=False):
         """
         Calculates the total number of bits in a image and returns it
         args
@@ -279,11 +286,6 @@ class ImageParser:
             image: image to retrive info
             is_cover: if image is cover it multiplies by 2. 
         """
-        n_bit = 2 if iscover else 8
-        return image.shape[0] * image.shape[1] * image.shape[1] * n_bit
-
-    @staticmethod
-    def __get_image_bit_len(height, width, nchannel, iscover=False):
         num_bit = 2 if iscover else 8
 
         return height * width * nchannel * num_bit
@@ -324,14 +326,13 @@ class ImageParser:
 
         
     def decode(self):
-        data, encoding = self.__decode_image()
-        print(encoding)
-        if encoding == TXT:
+        data = self.__decode_image()
+        if self.encoding_type == TXT:
             print(data)
-        elif encoding == JPG or encoding == PNG:
+        elif self.encoding_type == JPG or self.encoding_type == PNG:
             # print(data[0][:5])
             Image.fromarray(data).save(
-                f"{secrets.token_hex(16)}.{encoding.lower()}")
+                f"{secrets.token_hex(16)}.{self.encoding_type.lower()}")
 
 
 #height, width, channel
@@ -355,9 +356,9 @@ def main():
         if args.image_dir:
             if args.mode == "encode":
                 im = ImageParser(args.image_dir)
-                im.encode(args.format.upper(), args.directory )
-
+                im.encode(args.format.upper(), args.text )
             elif args.mode == "decode":
+                ImageParser(args.image_dir).decode()
                 # print(cover_image[0][: 6 ])
              
         else:
