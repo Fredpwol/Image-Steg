@@ -33,4 +33,5 @@ def encode_image():
 
 @app.route("/decode")
 def decode_image():
-    return "Decode Page!!"
+    form = DecodeForm
+    return render_template('decode.html', form=form, title = 'Decode Form' )
