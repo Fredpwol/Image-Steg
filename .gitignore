@@ -6,3 +6,4 @@ main/*.txt
 .vscode
 __pycache__
 test_images
+venv
