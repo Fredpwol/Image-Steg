@@ -1,11 +1,18 @@
 #!usr/bin/python3
 
 from PIL import Image
+from scipy.io.wavfile import write
+from bitstring import BitArray
+
 import argparse
 import numpy as np
 import os
 import copy
 import secrets
+
+import librosa
+import librosa.display
+
 
 #we use INT32_MAX for our maximum bit length
 """
@@ -36,6 +43,8 @@ class ImageParser:
         self.nchannel = parsed_image[3]
         self.__encoding = None
         self.__data_len = None
+        self.__audio_samplerate = None
+        self.__audio_frames_length = None
 
     @staticmethod
     def __load_image(im_dir):
@@ -123,30 +132,36 @@ class ImageParser:
             res += char
         return res
 
-    def __encode_image(self, bitstream):
+    def __encode_image(self, binary_data, bitstream=None):
         """
         Encodes the a image with a binary string and returns a encoded image array.
         args
         ----
-            bitstream: str
+            binary_data: str
         returns
         -------
             np.array 
         """
         img_copy = copy.deepcopy(self.image)
         prev_index = 0
-        data_len = len(bitstream)
+        data_len = len(binary_data)
         for i in range(self.height):
             for j in range(self.width):
                 for k, channel in enumerate(img_copy[i][j]):
                     if (prev_index + 2) < data_len:
-                        b = self.__return_binary(channel)
-                        dec = eval(
-                            f"0b{b[:6]}{bitstream[prev_index:2+prev_index]}")
-                        img_copy[i][j][k] = dec
+                        sbit = binary_data[prev_index:2+prev_index]
                         prev_index += 2
+                    elif bitstream is not None:
+                        try:
+                            sbit = bitstream.__next__()
+                        except StopIteration:
+                            return img_copy
                     else:
                         return img_copy
+                    b = self.__return_binary(channel)
+                    dec = eval(
+                        f"0b{b[:6]}{sbit}")
+                    img_copy[i][j][k] = dec
         return img_copy
 
     @property
@@ -199,8 +214,17 @@ class ImageParser:
         self.__encoding = res
         return res
 
-    def encode_audio_to_binary(self, audiofile):
-        return NotImplementedError
+
+    def encode_audio_to_binary(self, audiofile, bins=2):
+        frames, samplerate = librosa.load(audiofile)
+        self.__audio_samplerate = samplerate
+        self.__audio_frames_length = len(frames)
+        for i in range(len(frames)):
+            freq = frames[i]
+            bin_ = BitArray(float=freq, length=32).bin
+            for i in range(len(0, len(bin_), bins)):
+                yield bin_[i : i+bins]
+        
 
     def __get_image_data(self, image, starting_pixel, start_channel):
         """
@@ -280,41 +304,49 @@ class ImageParser:
         """
 
         return imgarr[0] * imgarr[1] * imgarr[2]
+    
+    @property
+    def available_bitspace(self):
+        self.height * self.width * self.nchannel * 2
 
-    def compare_image_bitspace(self, cover_image, other_image):
-        cover_image_pixels = ImageParser.get_pixel_count(cover_image)
+    def compare_image_bitspace(self, other_image):
         other_image_pixels = ImageParser.get_pixel_count(other_image)
-        return True
+        return self.available_bitspace > other_image_pixels * 8
 
     def encode(self, format, message_data):
         """
         message_data: str, dir_to_image
         """
+        encoding_bin = self.__encode_text_to_binary(format)
         if format == TXT:
-            encoding = TXT
             text = self.__encode_text_to_binary(message_data)
             bitlen = len(text)
-            encoding_bin = self.__encode_text_to_binary(encoding)
             bitlen_bin = self.__return_binary(bitlen, 32)
             data = bitlen_bin + encoding_bin + text
         elif format == PNG or format == JPG:
             message_image, message_image_height, message_image_width, message_image_channels = self.__load_image(
                 message_data)
-            assert self.compare_image_bitspace(
-                self.image, message_image), "Image file is to large to hide!"
+            assert self.compare_image_bitspace((message_image_height, message_image_width, message_image_channels)), "Image file is to large to hide!"
             image_bits = self.__encode_image_to_binary(message_image,
                                                        message_image_height,
                                                        message_image_width,
                                                        message_image_channels)
             bitlen = self.__return_binary(len(image_bits), 32)
             format = PNG if format == PNG else JPG
-            format_bin = self.__encode_text_to_binary(format)
-            data = bitlen + format_bin + self.__return_binary(message_image_height, 16) + \
+            data = bitlen + encoding_bin + self.__return_binary(message_image_height, 16) + \
             self.__return_binary(message_image_width, 16) + self.__return_binary(message_image_channels, 8) + image_bits
+        elif format == MP3 or format == WAV:
+            audio_bins = self.encode_audio_to_binary(message_data)
+            tempbin = audio_bins.__next__()
+            sample_rate = self.__audio_samplerate or 44100
+            if self.available_bitspace < self.__audio_frames_length * 32:
+                print(f"Sorry the audio bits is greater the the amount of available signiicant bit in the image. AVAILABE: {self.available_bitspace} EXPECTED {self.__audio_frames_length * 32}")
+                return
+            data = self.__return_binary(self.__audio_frames_length) + encoding_bin + self.__return_binary(sample_rate, 32) + tempbin
         else:
             raise ValueError("Please Enter a valid format")
-
-        encoded_image = self.__encode_image(data)
+        bitstream = None if format not in [MP3, WAV] else audio_bins
+        encoded_image = self.__encode_image(data, bitstream)
         filename = os.path.basename(self.dir)
         filename = filename[:filename.find(".")]
         # print(encoded_image[0][:6], cover_image[0][:6])
