@@ -14,7 +14,7 @@ import librosa
 import librosa.display
 
 
-#we use INT32_MAX for our maximum bit length
+# we use INT32_MAX for our maximum bit length
 """
 Image Steganography using Lowest Significant Bits (LCB) works by fliping the last two bits of a channel in an Image.
 #TODO: work on Discrete Cosine Transform (DCT) AND huffman encoding.
@@ -25,15 +25,14 @@ Encoding constants
 This are header encoding constants which will be used to define what type of data is embeded in the Image.
 """
 
-TXT = "TXT"  #done
-PNG = "PNG"  #done
-JPG = "JPG"  #done
-WAV = "WAV"  #work
+TXT = "TXT"  # done
+PNG = "PNG"  # done
+JPG = "JPG"  # done
+WAV = "WAV"  # work
 MP3 = "MP3"  # work
 
 
 class ImageParser:
-
     def __init__(self, dir):
         parsed_image = self.__load_image(dir)
         self.image = parsed_image[0]
@@ -72,14 +71,15 @@ class ImageParser:
         args
         ----
             string: str
-        
+
         returns
         -------
             res: str
         """
         res = ""
         for char in string:
-            if type(char) == int: char = chr(char)
+            if type(char) == int:
+                char = chr(char)
             ascii_dec = ord(char)
             res += self.__return_binary(ascii_dec)
         return res
@@ -119,14 +119,14 @@ class ImageParser:
         args
         ----
             binary: str
-            A string of binary e.g 101001 
+            A string of binary e.g 101001
         returns
         -------
             str
         """
         res = ""
         for i in range(0, len(binary), 8):
-            b = binary[i:i + 8]
+            b = binary[i : i + 8]
             dec = eval(f"0b{b}")
             char = chr(dec)
             res += char
@@ -140,7 +140,7 @@ class ImageParser:
             binary_data: str
         returns
         -------
-            np.array 
+            np.array
         """
         img_copy = copy.deepcopy(self.image)
         prev_index = 0
@@ -149,7 +149,7 @@ class ImageParser:
             for j in range(self.width):
                 for k, channel in enumerate(img_copy[i][j]):
                     if (prev_index + 2) < data_len:
-                        sbit = binary_data[prev_index:2+prev_index]
+                        sbit = binary_data[prev_index : 2 + prev_index]
                         prev_index += 2
                     elif bitstream is not None:
                         try:
@@ -159,8 +159,7 @@ class ImageParser:
                     else:
                         return img_copy
                     b = self.__return_binary(channel)
-                    dec = eval(
-                        f"0b{b[:6]}{sbit}")
+                    dec = eval(f"0b{b[:6]}{sbit}")
                     img_copy[i][j][k] = dec
         return img_copy
 
@@ -171,8 +170,9 @@ class ImageParser:
         """
         if self.__data_len is not None:
             return self.__data_len
-        _range = self.image[0][:(32 // (self.nchannel * 2) +
-                                 1)]  #add 1 pixel to catch overlap
+        _range = self.image[0][
+            : (32 // (self.nchannel * 2) + 1)
+        ]  # add 1 pixel to catch overlap
         res = ""
         count = 0
         for i in range(len(_range)):
@@ -194,7 +194,7 @@ class ImageParser:
         """
         if self.__encoding is not None:
             return self.__encoding
-        _range = self.image[0][(32 // (self.nchannel * 2)):]
+        _range = self.image[0][(32 // (self.nchannel * 2)) :]
         start_channel = (32 % self.nchannel) / 2
         res = ""
         count = 0
@@ -214,7 +214,6 @@ class ImageParser:
         self.__encoding = res
         return res
 
-
     def encode_audio_to_binary(self, audiofile, bins=2):
         frames, samplerate = librosa.load(audiofile)
         self.__audio_samplerate = samplerate
@@ -223,8 +222,7 @@ class ImageParser:
             freq = frames[i]
             bin_ = BitArray(float=freq, length=32).bin
             for i in range(len(0, len(bin_), bins)):
-                yield bin_[i : i+bins]
-        
+                yield bin_[i : i + bins]
 
     def __get_image_data(self, image, starting_pixel, start_channel):
         """
@@ -256,8 +254,11 @@ class ImageParser:
         starting_pixel = 56 // (self.nchannel * 2)
         start_channel = (56 % self.nchannel) / 2
         if self.encoding_type == PNG or self.encoding_type == JPG:
-            hidden_image_height, hidden_image_width, hidden_image_channel = self.__get_image_data(
-                self.image, starting_pixel, start_channel)
+            (
+                hidden_image_height,
+                hidden_image_width,
+                hidden_image_channel,
+            ) = self.__get_image_data(self.image, starting_pixel, start_channel)
             starting_pixel = (56 + 40) // (self.nchannel * 2)
             start_channel = ((56 + 40) % self.nchannel) / 2
         length = 0
@@ -273,22 +274,25 @@ class ImageParser:
                         length += 2
                     else:
                         break
-                if length >= self.data_len: break
-            if length >= self.data_len: break
+                if length >= self.data_len:
+                    break
+            if length >= self.data_len:
+                break
         if self.encoding_type == TXT:
             res = self.__decode_binary_to_ascii(res)
         if self.encoding_type == JPG or self.encoding_type == PNG:
-            _image = np.zeros((hidden_image_height, hidden_image_width,
-                               hidden_image_channel),
-                              dtype=np.uint8)
+            _image = np.zeros(
+                (hidden_image_height, hidden_image_width, hidden_image_channel),
+                dtype=np.uint8,
+            )
             prev_index = 0
             print(len(res))
             for i in range(hidden_image_height):
                 for j in range(hidden_image_width):
                     for k in range(hidden_image_channel):
-                        if prev_index + 8 > len(res): break
-                        _image[i][j][k] = eval(
-                            f"0b{res[prev_index:prev_index+8]}")
+                        if prev_index + 8 > len(res):
+                            break
+                        _image[i][j][k] = eval(f"0b{res[prev_index:prev_index+8]}")
                         prev_index += 8
             res = _image
         return res
@@ -300,11 +304,11 @@ class ImageParser:
         args
         ----
             image: image to retrive info
-            is_cover: if image is cover it multiplies by 2. 
+            is_cover: if image is cover it multiplies by 2.
         """
 
         return imgarr[0] * imgarr[1] * imgarr[2]
-    
+
     @property
     def available_bitspace(self):
         self.height * self.width * self.nchannel * 2
@@ -324,33 +328,56 @@ class ImageParser:
             bitlen_bin = self.__return_binary(bitlen, 32)
             data = bitlen_bin + encoding_bin + text
         elif format == PNG or format == JPG:
-            message_image, message_image_height, message_image_width, message_image_channels = self.__load_image(
-                message_data)
-            assert self.compare_image_bitspace((message_image_height, message_image_width, message_image_channels)), "Image file is to large to hide!"
-            image_bits = self.__encode_image_to_binary(message_image,
-                                                       message_image_height,
-                                                       message_image_width,
-                                                       message_image_channels)
+            (
+                message_image,
+                message_image_height,
+                message_image_width,
+                message_image_channels,
+            ) = self.__load_image(message_data)
+            assert self.compare_image_bitspace(
+                (message_image_height, message_image_width, message_image_channels)
+            ), "Image file is to large to hide!"
+            image_bits = self.__encode_image_to_binary(
+                message_image,
+                message_image_height,
+                message_image_width,
+                message_image_channels,
+            )
             bitlen = self.__return_binary(len(image_bits), 32)
             format = PNG if format == PNG else JPG
-            data = bitlen + encoding_bin + self.__return_binary(message_image_height, 16) + \
-            self.__return_binary(message_image_width, 16) + self.__return_binary(message_image_channels, 8) + image_bits
+            data = (
+                bitlen
+                + encoding_bin
+                + self.__return_binary(message_image_height, 16)
+                + self.__return_binary(message_image_width, 16)
+                + self.__return_binary(message_image_channels, 8)
+                + image_bits
+            )
         elif format == MP3 or format == WAV:
             audio_bins = self.encode_audio_to_binary(message_data)
             tempbin = audio_bins.__next__()
             sample_rate = self.__audio_samplerate or 44100
             if self.available_bitspace < self.__audio_frames_length * 32:
-                print(f"Sorry the audio bits is greater the the amount of available signiicant bit in the image. AVAILABE: {self.available_bitspace} EXPECTED {self.__audio_frames_length * 32}")
+                print(
+                    f"Sorry the audio bits is greater the the amount of available signiicant bit in the image. AVAILABE: {self.available_bitspace} EXPECTED {self.__audio_frames_length * 32}"
+                )
                 return
-            data = self.__return_binary(self.__audio_frames_length) + encoding_bin + self.__return_binary(sample_rate, 32) + tempbin
+            data = (
+                self.__return_binary(self.__audio_frames_length)
+                + encoding_bin
+                + self.__return_binary(sample_rate, 32)
+                + tempbin
+            )
         else:
             raise ValueError("Please Enter a valid format")
         bitstream = None if format not in [MP3, WAV] else audio_bins
         encoded_image = self.__encode_image(data, bitstream)
         filename = os.path.basename(self.dir)
-        filename = filename[:filename.find(".")]
+        filename = filename[: filename.find(".")]
         # print(encoded_image[0][:6], cover_image[0][:6])
-        Image.fromarray(encoded_image.copy()).save(f"encoded-{filename}.png", )
+        Image.fromarray(encoded_image.copy()).save(
+            f"encoded-{filename}.png",
+        )
 
     def decode(self):
         data = self.__decode_image()
@@ -360,13 +387,12 @@ class ImageParser:
         elif self.encoding_type == JPG or self.encoding_type == PNG:
             # print(data[0][:5])
             im = Image.fromarray(data)
-            im.save(
-                f"{secrets.token_hex(16)}.{self.encoding_type.lower()}")
+            im.save(f"{secrets.token_hex(16)}.{self.encoding_type.lower()}")
             im.show()
             return f"Image file saved at {secrets.token_hex(16)}.{self.encoding_type.lower()}"
 
 
-#height, width, channel
+# height, width, channel
 
 
 def main():
@@ -381,7 +407,8 @@ def main():
     encode_parser.add_argument("-i", dest="image_dir", type=str)
     encode_parser.add_argument("-f", dest="format", type=str)
     decode_parser = subparser.add_parser(
-        "decode", help="decodes data hidden in image and prints it.")
+        "decode", help="decodes data hidden in image and prints it."
+    )
     decode_parser.add_argument("-i", dest="image_dir", type=str)
     args = parser.parse_args()
     if args.mode:
@@ -399,5 +426,5 @@ def main():
         print("Please specify a mode!")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
