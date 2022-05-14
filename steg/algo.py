@@ -373,7 +373,7 @@ class ImageParser:
                 )
                 return
             data = (
-                self.__return_binary(self.__audio_frames_length,32)
+                self.__return_binary(self.__audio_frames_length * 32,32)
                 + encoding_bin
                 + self.__return_binary(int(sample_rate), 32)
                 + tempbin
