@@ -1,6 +1,7 @@
 import os
 from main import app
 from flask import request, flash, redirect, render_template
+
 from main.form import EncodeForm, DecodeForm
 from werkzeug.utils import secure_filename
 
@@ -22,7 +23,7 @@ def home():
         # print("Path", os.path.join(app.root_path, "images", filename))
         # return redirect("/")
         # f.save()
-    return render_template("index.html", **context)
+    return render_template("base.html", **context)
 
 @app.route("/encode", methods=["GET", "POST"])
 def encode_image():

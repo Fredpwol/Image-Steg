@@ -1,0 +1,6 @@
+.box__dragndrop,
+.box__success, 
+.box__uploading, 
+.box__error{
+    display: none;
+}

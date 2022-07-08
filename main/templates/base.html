@@ -1,42 +1,91 @@
+<!-- {% extends "bootstrap/base.html" %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"> -->
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% if title %}
+    <!-- CSS only -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" 
+integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link href="css/style.css" rel="stylesheet">
+    <!-- CSS only -->
+<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <!--{% if title %}
         <title> {{ title }} </title>
     {% else %}
         <title>Image Steg</title>
-    {% endif %}
-    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../static//css/index.css">
-    <script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    {% endif %}  -->
+
+    <!--<script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script> -->
 </head>
 
 <body>
-    <div class="flex px-16 py-4 shadow-lg mb-16 bg-blue-400 fixed w-full">
-        <h1 class="text-3xl font-bold text-white mr-32">
-            Image Steg
-        </h1>
-        <div class="flex justify-between w-72 mt-2">
-            <a href="/" class="text-white">
-                Encode
-            </a>
-            <a href="/" class="text-white">
-                Decode
-            </a>
-            <a href="/" class="text-white">
-                Support Us
-            </a>
+    <!-- Navbar -->
+    <navbar class="navbar navbar-expand-lg bg-light navbar-light">
+        <div class="container">
+            <a href='#' class="navbar-brand"> Image Steganography </a> 
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navmenu"
+            >
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navmenu">
+                <ul class="navbar-nav ms-auto ">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link "> <button class="btn btn-md mb-1">  Encode </button>   </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link"> <button class="btn  btn-md mb-1"> Decode</button>   </a>
+                    </li>   
+                    <li class="nav-item">
+                        <a href="#" class="nav-link "> <button class="btn btn-dark btn-md mb-1 ">  Support Us </button></a>
+                    </li>
+
+                </ul>
+            </div>
         </div>
+
+    </navbar>
+    
+    <!-- Showcase -->
+    <section class="bg-dark p-5 p-lg-0 text-light text-center text-sm-start">
+        <div class="container">
+            <div class="d-sm-flex align-items-center justify-content-inbetween">
+                <img class="img-fluid w-50 d-none d-sm-block" src="image/hide-file.svg" alt="">
+                <div>
+                    <h1> Hide  <spam class="text-warning"> Information </spam> in media files</h1>
+                    <p class="lead my-4"> Encode sensitive data by hiding them in images, audio and video files </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!--  Encode Form    -->
+    <div class="container my-5">
+
+        <form class="box" method="POST" enctype="multipart/form-data" >
+            <div class="box__file" type="file" name="files[]" id="file" data-multiple-caption="{count} files selected" multiple >
+                <label for="file"><Strong> Choose a File </Strong><span class="box__dragndrop"> Or drag it here </span></label>
+                <button class="box__button" type="submit"> Upload </button>
+            </div>
+            <div class="box__uploading"> Uploading..... </div>
+            <div class="box__success"> Done! </div>
+            <div class="box__error"> Error! </div>
+        </form>
     </div>
-    <div class="container p-4 pt-8">
-        {% block body %}
+       <!-- {% block body %}
         {% endblock %}
-    </div>
-<script src="../static/js/index.js"></script>
+        <!-- JavaScript Bundle with Popper --> 
+   <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    <script src="../static/js/index.js"></script>
 </body>
 
 </html>
