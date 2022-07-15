@@ -1,6 +1,11 @@
-.box__dragndrop,
-.box__success, 
-.box__uploading, 
-.box__error{
-    display: none;
+[class*='card']{
+    border: none;
+    background-color: white;
+    
+}
+
+
+.dotted{
+    border: 1px dotted black;
+    border-radius: 3%;
 }

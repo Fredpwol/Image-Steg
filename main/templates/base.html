@@ -7,8 +7,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- CSS only -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" 
-integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
+    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" 
+    integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <link href="css/style.css" rel="stylesheet">
     <!-- CSS only -->
 <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
@@ -67,18 +71,107 @@ integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmV
     </section>
 
     <!--  Encode Form    -->
-    <div class="container my-5">
+   
+            
+       
+             <section class="p-5 ">
+        
+            
+                <div class="container align-self-center">
+                    <div class="row d-flex justify-content-center ">
+                        <div class="col-md-5  dotted p-5  ">
+                        
+                        
+                        <div class="card bg-light text-dark ">
+                            <div class="card-body text-center">
+                        
+                        
+                            <div class="h1 justify-content-center mb-3">
+                                <i class="bi bi-cloud-upload "></i>
+                            </div>
+                            <h3 class="card-title mb-3">Encode File </h3>
+                            <div class="mb-3 ">
+                                <label for="" class="form-label"> Data to encode </label>
+                                <textarea class="form-control" rows="2"></textarea>
+                            </div>
 
-        <form class="box" method="POST" enctype="multipart/form-data" >
-            <div class="box__file" type="file" name="files[]" id="file" data-multiple-caption="{count} files selected" multiple >
-                <label for="file"><Strong> Choose a File </Strong><span class="box__dragndrop"> Or drag it here </span></label>
-                <button class="box__button" type="submit"> Upload </button>
-            </div>
-            <div class="box__uploading"> Uploading..... </div>
-            <div class="box__success"> Done! </div>
-            <div class="box__error"> Error! </div>
-        </form>
-    </div>
+
+                            <div class="mb-3 ">
+                                <input class="form-control" type="file" id="formFile">
+                            </div>
+                            
+                            <button class="btn btn-outline-warning" type="submit"> Upload </button>                    
+
+                        </div>
+                
+                
+                    </div>
+                </div>
+                </div>
+            </section>
+                <section class="p-5 ">
+        
+            
+                    <div class="container align-self-center">
+                        <div class="row d-flex justify-content-center ">
+                            <div class="col-md-5  dotted p-5  ">
+                            
+                            
+                            <div class="card bg-light text-dark ">
+                                <div class="card-body text-center">
+                            
+                            
+                                <div class="h1 justify-content-center mb-3">
+                                    <i class="bi bi-cloud-upload "></i>
+                                </div>
+                                <h3 class="card-title mb-3">Decode File </h3>
+                               
+                            
+    
+    
+                                <div class="mb-3 ">
+                                    <input class="form-control" type="file" id="formFile">
+                                </div>
+                                
+                                <button class="btn btn-outline-warning" type="submit"> Upload </button>                    
+    
+                            </div>
+                    
+                    
+                        </div>
+                    </div>
+                    </div>
+                </section>
+            <section id="support" class="p-5 bg-dark text-light">
+                <div class="container">
+                    <div class="row align-items-center justify-content-between">
+                        <div class="col-md">
+                            <img src="image/support.svg" class="img-fluid w-25 h-25" alt="">
+                        </div>
+                        <div class="col-md p-5">
+                            <h2> Support Us</h2>
+                            <p class="lead"> Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                                Temporibus dolorem voluptate quaerat facilis deserunt, numquam atque sapiente nemo excepturi 
+                                vitae nobis, suscipit molestiae iste molestias omnis obcaecati cupiditate dignissimos eum.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="p-5 bg-gray-100">
+                <div class="container">
+                    <p class="text-center h4"> Connect with us </p>
+                    <p class=" h2 text-center">
+                        <a href="https://twitter.com/__shakura__" ><i class="bi bi-twitter"></i></a>
+                        <a href="https://web.facebook.com/gift.adaji.9"><i class="bi bi-facebook"></i></a>
+                        <a href="https://www.linkedin.com/in/emmanuel-adoyi-775538171/"><i class="bi bi-linkedin"></i></a>
+                        <a href="https://github.com/Emmzy17"><i class="bi bi-github"></i></a>
+                    </p>
+                    <div class="mt-5 mb-2">
+                        <p class="text-center lead"> &copy; Copyright 2023 </p>
+                    </div>
+                </div>
+            </section>
        <!-- {% block body %}
         {% endblock %}
         <!-- JavaScript Bundle with Popper --> 
