@@ -1,42 +1,183 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"> 
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSS only -->
+    <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" 
+    integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link href="{{ url_for('static', filename = 'style.css')}}" rel="stylesheet">
+   
     {% if title %}
         <title> {{ title }} </title>
     {% else %}
-        <title>Image Steg</title>
-    {% endif %}
-    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../static//css/index.css">
-    <script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+        <title> Image Steg</title>
+    {% endif %} 
+
+    <!--<script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script> -->
 </head>
+{% block body %}
+    <body>
+        <!-- Navbar -->
+        <navbar class="navbar navbar-expand-lg bg-light navbar-light">
+            <div class="container">
+                <a href='#' class="navbar-brand"> Image Steganography </a> 
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navmenu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-<body>
-    <div class="flex px-16 py-4 shadow-lg mb-16 bg-blue-400 fixed w-full">
-        <h1 class="text-3xl font-bold text-white mr-32">
-            Image Steg
-        </h1>
-        <div class="flex justify-between w-72 mt-2">
-            <a href="/" class="text-white">
-                Encode
-            </a>
-            <a href="/" class="text-white">
-                Decode
-            </a>
-            <a href="/" class="text-white">
-                Support Us
-            </a>
-        </div>
-    </div>
-    <div class="container p-4 pt-8">
-        {% block body %}
-        {% endblock %}
-    </div>
-<script src="../static/js/index.js"></script>
-</body>
+                <div class="collapse navbar-collapse" id="navmenu">
+                    <ul class="navbar-nav ms-auto ">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link "> <button class="btn btn-md mb-1">  Encode </button>   </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link"> <button class="btn  btn-md mb-1"> Decode</button>   </a>
+                        </li>   
+                        <li class="nav-item">
+                            <a href="#" class="nav-link "> <button class="btn btn-dark btn-md mb-1 ">  Support Us </button></a>
+                        </li>
 
+                    </ul>
+                </div>
+            </div>
+
+        </navbar>
+        
+        <!-- Showcase -->
+        <section class="bg-dark p-5 p-lg-0 text-light text-center text-sm-start">
+            <div class="container">
+                <div class="d-sm-flex align-items-center justify-content-inbetween">
+                    <img class="img-fluid w-50 d-none d-sm-block" src="{{ url_for('static', filename='image/hide-file.svg') }}" alt="">
+                    <div>
+                        <h1> Hide  <spam class="text-warning"> Information </spam> in media files</h1>
+                        <p class="lead my-4"> Encode sensitive data by hiding them in images, audio and video files </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!--  Encode Form    -->
+    
+                
+        
+                <section class="p-5 ">
+            
+                
+                    <div class="container align-self-center">
+                        <div class="row d-flex justify-content-center ">
+                            <div class="col-md-5  dotted p-5  ">
+                            
+                            
+                            <div class="card bg-light text-dark ">
+                                <div class="card-body text-center">
+                            
+                            
+                                <div class="h1 justify-content-center mb-3">
+                                    <i class="bi bi-cloud-upload "></i>
+                                </div>
+                                <h3 class="card-title mb-3">Encode File </h3>
+                                <div class="mb-3 ">
+                                    <label for="" class="form-label"> Data to encode </label>
+                                    
+                                </div>
+
+                        <form action="/" method="post" enctype="multipart/form-data">  
+                                <div class="mb-3 ">
+                                    
+                                    {{ form.file(class='form-control', type='file') }}
+                                    {{ form.message(class='form-control mt-3', rows='3')}}
+                                </div>
+                                
+                                {{ form.submit(class='btn btn-outline-warning')}}                    
+
+                            </div>
+                        </form>
+                    
+                        </div>
+                    </div>
+                    </div>
+                </section>
+                    <section class="p-5 ">
+            
+                
+                        <div class="container align-self-center">
+                            <div class="row d-flex justify-content-center ">
+                                <div class="col-md-5  dotted p-5  ">
+                                
+                                
+                                <div class="card bg-light text-dark ">
+                                    <div class="card-body text-center">
+                                
+                                
+                                    <div class="h1 justify-content-center mb-3">
+                                        <i class="bi bi-cloud-upload "></i>
+                                    </div>
+                                    <h3 class="card-title mb-3">Decode File </h3>
+                                
+                            
+        
+                                <form action="/" method="post" enctype="multipart/form-data">  
+                                    <div class="mb-3 ">
+                                        {{ deform.file(class='form-control') }}
+                                    </div>
+                                    
+                                    {{ deform.submit(class='btn btn-outline-warning')}}                      
+        
+                                </div>
+                                </dform 
+                        
+                            </div>
+                        </div>
+                        </div>
+                    </section>
+                <section id="support" class="p-5 bg-dark text-light">
+                    <div class="container">
+                        <div class="row align-items-center justify-content-between">
+                            <div class="col-md">
+                                <img src="{{ url_for('static', filename='image/support.svg') }}" class="img-fluid w-25 h-25" alt="">
+                            </div>
+                            <div class="col-md p-5">
+                                <h2> Support Us</h2>
+                                <p class="lead"> Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                                    Temporibus dolorem voluptate quaerat facilis deserunt, numquam atque sapiente nemo excepturi 
+                                    vitae nobis, suscipit molestiae iste molestias omnis obcaecati cupiditate dignissimos eum.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="p-5 bg-gray-100">
+                    <div class="container">
+                        <p class="text-center h4"> Connect with us </p>
+                        <p class=" h2 text-center">
+                            <a href="https://twitter.com/__shakura__" ><i class="bi bi-twitter"></i></a>
+                            <a href="https://web.facebook.com/gift.adaji.9"><i class="bi bi-facebook"></i></a>
+                            <a href="https://www.linkedin.com/in/emmanuel-adoyi-775538171/"><i class="bi bi-linkedin"></i></a>
+                            <a href="https://github.com/Emmzy17"><i class="bi bi-github"></i></a>
+                        </p>
+                        <div class="mt-5 mb-2">
+                            <p class="text-center lead"> &copy; Copyright 2023 </p>
+                        </div>
+                    </div>
+                </section>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" 
+                    integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+        <script src="../static/js/index.js"></script>
+    </body>
+
+        
+{% endblock %}
+        <!-- JavaScript Bundle with Popper --> 
+   <!-- JavaScript Bundle with Popper -->
+    
 </html>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="20mm"
+   height="20mm"
+   viewBox="0 0 20 20"
+   version="1.1"
+   id="svg1139"
+   sodipodi:docname="Folder and files icon.svg"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)">
+  <title
+     id="title200">Folder and files icon</title>
+  <defs
+     id="defs1133">
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath5238-1-8-9-8-4">
+      <rect
+         transform="rotate(-90)"
+         style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;enable-background:accumulate"
+         id="rect5240-2-3-9-5-1"
+         width="315.35437"
+         height="744.09448"
+         x="-1016.9291"
+         y="1461.6753" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath5242-3-9-7-7">
+      <rect
+         transform="rotate(-90)"
+         style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;enable-background:accumulate"
+         id="rect5244-3-2-6-6"
+         width="315.35437"
+         height="744.09448"
+         x="-1016.9291"
+         y="1461.6753" />
+    </clipPath>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="6.9717708"
+     inkscape:cx="37.795276"
+     inkscape:cy="37.795276"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="944"
+     inkscape:window-height="1041"
+     inkscape:window-x="960"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-paths="true"
+     inkscape:snap-bbox-edge-midpoints="true"
+     inkscape:bbox-nodes="true"
+     inkscape:snap-bbox-midpoints="true"
+     inkscape:object-paths="true"
+     inkscape:snap-intersection-paths="true"
+     inkscape:snap-smooth-nodes="true"
+     inkscape:snap-midpoints="true"
+     fit-margin-left="0"
+     fit-margin-top="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata1136">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Folder and files icon</dc:title>
+        <dc:date>2018-09-30</dc:date>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>m1981</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:rights>
+          <cc:Agent>
+            <dc:title>Public domain</dc:title>
+          </cc:Agent>
+        </dc:rights>
+        <dc:publisher>
+          <cc:Agent>
+            <dc:title>Inkscape</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>icon</rdf:li>
+            <rdf:li>flat</rdf:li>
+            <rdf:li>IT</rdf:li>
+            <rdf:li>computer</rdf:li>
+            <rdf:li>storage</rdf:li>
+            <rdf:li>folder</rdf:li>
+            <rdf:li>file</rdf:li>
+            <rdf:li></rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+        <dc:description>A folder / files icon.</dc:description>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-59.905655,-146.73082)">
+    <path
+       style="display:inline;opacity:1;vector-effect:none;fill:#4d4d4d;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.30963314px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none"
+       d="m 65.861736,151.1315 -1.495396,1.47118 h -1.197324 v 9.72746 h 13.473276 v -9.72746 h -5.540551 l -1.576604,-1.47118 z m 0.493239,2.231 h 2.101336 l 1.809257,1.80928 v 3.97122 h -0.622873 v -3.71551 l -1.443316,-1.4421 h -1.844404 z m -1.151264,1.23125 h 2.743626 l 1.085802,1.08581 v 4.41959 h -3.829428 z m 0.655605,0.95734 v 0.6229 h 1.634792 v -0.6229 z m 0,1.48452 v 0.62287 h 2.519416 v -0.62287 z m 0,1.4833 v 0.62409 h 2.519416 v -0.62409 z"
+       id="rect4539-5"
+       inkscape:connector-curvature="0" />
+  </g>
+</svg>

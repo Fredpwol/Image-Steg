@@ -5,12 +5,12 @@ from flask_wtf.file import FileField, FileAllowed, FileRequired
 
 
 class EncodeForm(FlaskForm):
-    file = FileField("Add Cover Image",
+    file = FileField(
                      validators=[
                          FileRequired(),
                          FileAllowed(["png", "jpg", "jpeg"], "Images Only!")
                      ])
-    message = TextAreaField("Message", description="Enter heidden message")
+    message = TextAreaField(description="Enter heidden message")
     message_file = FileField("Hidden Message")
     email = TextAreaField("Email",
                           validators=[Email("Please enter a valid email")])
