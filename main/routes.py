@@ -14,16 +14,20 @@ def check_image_path():
 @app.route("/", methods=["GET", "POST"])
 def home():
     form = EncodeForm(request.form)
-    context = {"form" : form}
+    deform = DecodeForm(request.form)
+
+    if form.validate_on_submit():
+        
+    
     if request.method.lower() == "post":
         print(form.is_submitted(), "submitted", form.validate(),)
-        # print ("Submitted!!")
-        # f = form.file.data
-        # filename = secure_filename(f.filename)
-        # print("Path", os.path.join(app.root_path, "images", filename))
-        # return redirect("/")
-        # f.save()
-    return render_template("base.html", **context)
+        print ("Submitted!!")
+        f = form.file.data
+        filename = secure_filename(f.filename)
+        print("Path", os.path.join(app.root_path, "images", filename))
+        return redirect("/")
+        f.save()
+    return render_template("base.html", form=form, deform = deform)
 
 @app.route("/encode", methods=["GET", "POST"])
 def encode_image():
