@@ -1,9 +1,11 @@
 #!usr/bin/python3
 
+from urllib.request import AbstractHTTPHandler
 from PIL import Image
 from scipy.io.wavfile import write
 from bitstring import BitArray
 
+import enum
 import argparse
 import numpy as np
 import os
@@ -25,11 +27,12 @@ Encoding constants
 This are header encoding constants which will be used to define what type of data is embeded in the Image.
 """
 
-TXT = "TXT"  # done
-PNG = "PNG"  # done
-JPG = "JPG"  # done
-WAV = "WAV"  # work
-MP3 = "MP3"  # work
+class Format(enum.Enum):
+    TXT = "TXT"  # done
+    PNG = "PNG"  # done
+    JPG = "JPG"  # done
+    WAV = "WAV"  # work
+    MP3 = "MP3"  # work
 
 
 class ImageParser:
@@ -275,7 +278,7 @@ class ImageParser:
         """
         starting_pixel = 56 // (self.nchannel * 2)
         start_channel = (56 % self.nchannel) / 2
-        if self.encoding_type == PNG or self.encoding_type == JPG:
+        if self.encoding_type == Format.PNG.value or self.encoding_type == Format.JPG.value:
             (
                 self.__hidden_image_height,
                 self.__hidden_image_width,
@@ -283,7 +286,7 @@ class ImageParser:
             ) = self.__get_image_data(self.image, starting_pixel, start_channel)
             starting_pixel = (56 + 40) // (self.nchannel * 2)
             start_channel = ((56 + 40) % self.nchannel) / 2
-        elif self.encoding_type in [WAV, MP3]:
+        elif self.encoding_type in [Format.WAV.value, Format.MP3.value]:
             self.__audio_samplerate = self.__get_audio_data(starting_pixel, start_channel)
             starting_pixel = (56 + 32) // (self.nchannel * 2)
             start_channel = ((56 + 32) % self.nchannel) / 2
@@ -331,12 +334,12 @@ class ImageParser:
         message_data: str, dir_to_image
         """
         encoding_bin = self.__encode_text_to_binary(format)
-        if format == TXT:
+        if format == Format.TXT.value:
             text = self.__encode_text_to_binary(message_data)
             bitlen = len(text)
             bitlen_bin = self.__return_binary(bitlen, 32)
             data = bitlen_bin + encoding_bin + text
-        elif format == PNG or format == JPG:
+        elif format == Format.PNG.value or format == Format.JPG.value:
             (
                 message_image,
                 message_image_height,
@@ -353,7 +356,7 @@ class ImageParser:
                 message_image_channels,
             )
             bitlen = self.__return_binary(len(image_bits), 32)
-            format = PNG if format == PNG else JPG
+            format = Format.PNG.value if format == Format.PNG.value else Format.JPG.value
             data = (
                 bitlen
                 + encoding_bin
@@ -362,7 +365,7 @@ class ImageParser:
                 + self.__return_binary(message_image_channels, 8)
                 + image_bits
             )
-        elif format == MP3 or format == WAV:
+        elif format == Format.MP3.value or format == Format.WAV.value:
             audio_bins = self.encode_audio_to_binary(message_data)
             tempbin = audio_bins.__next__()
             sample_rate = self.__audio_samplerate or 44100
@@ -380,7 +383,7 @@ class ImageParser:
             )
         else:
             raise ValueError("Please Enter a valid format")
-        bitstream = None if format not in [MP3, WAV] else audio_bins
+        bitstream = None if format not in [Format.MP3.value, Format.WAV.value] else audio_bins
         encoded_image = self.__encode_image(data, bitstream)
         filename = os.path.basename(self.dir)
         filename = filename[: filename.find(".")]
@@ -391,11 +394,11 @@ class ImageParser:
 
     def decode(self):
         data = self.__decode_image()
-        if self.encoding_type == TXT:
+        if self.encoding_type == Format.TXT.value:
             data = self.__decode_binary_to_ascii(data)
             print(data)
             return data
-        elif self.encoding_type == JPG or self.encoding_type == PNG:
+        elif self.encoding_type == Format.JPG.value or self.encoding_type == Format.PNG.value:
             _image = np.zeros(
                 (self.__hidden_image_height, self.__hidden_image_width, self.__hidden_image_nchannel),
                 dtype=np.uint8,
@@ -414,7 +417,7 @@ class ImageParser:
             im.show()
             return f"Image file saved at {secrets.token_hex(16)}.{self.encoding_type.lower()}"
         
-        elif self.encoding_type in [MP3, WAV]:
+        elif self.encoding_type in [Format.MP3.value, Format.WAV.value]:
             audio_frames = np.zeros(len(data) // 32)
             for i in range(0, len(data) // 32, 32):
                 freq_val = BitArray(bin=data[i: i + 32]).float
