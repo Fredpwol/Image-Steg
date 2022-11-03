@@ -10,7 +10,7 @@ class EncodeForm(FlaskForm):
                          FileRequired(),
                          FileAllowed(["png", "jpg", "jpeg"], "Images Only!")
                      ])
-    message = TextAreaField(description="Enter heidden message")
+    message = TextAreaField(description="Enter hidden message")
     message_file = FileField("Hidden Message")
     email = TextAreaField("Email",
                           validators=[Email("Please enter a valid email")])
