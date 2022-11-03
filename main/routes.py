@@ -17,7 +17,7 @@ def home():
     deform = DecodeForm(request.form)
 
     if form.validate_on_submit():
-        
+        pass
     
     if request.method.lower() == "post":
         print(form.is_submitted(), "submitted", form.validate(),)
