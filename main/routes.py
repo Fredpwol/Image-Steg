@@ -2,6 +2,7 @@ import os
 from main import app
 from flask import request, flash, redirect, render_template
 
+
 from main.form import EncodeForm, DecodeForm
 from werkzeug.utils import secure_filename
 
