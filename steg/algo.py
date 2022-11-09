@@ -369,16 +369,26 @@ class ImageParser:
         other_image_pixels = ImageParser.get_pixel_count(other_image)
         return self.available_bitspace > other_image_pixels * 8
 
-    def encode(self, format, message_data):
+    def encode(self, format, message_data, as_generator=False, output_dir=None):
         """
         message_data: str, dir_to_image
         """
         encoding_bin = self.__encode_text_to_binary(format)
+
+        if as_generator:
+            yield 2
+        
         if format == Format.TXT.value:
             text = self.__encode_text_to_binary(message_data)
+
+            if as_generator:
+                yield 20
+
             bitlen = len(text)
             bitlen_bin = self.__return_binary(bitlen, 32)
             data = bitlen_bin + encoding_bin + text
+
+            if as_generator: yield 50
         elif format == Format.PNG.value or format == Format.JPG.value:
             (
                 message_image,
@@ -386,20 +396,25 @@ class ImageParser:
                 message_image_width,
                 message_image_channels,
             ) = self.__load_image(message_data)
+            if as_generator: yield 20
+
             assert self.compare_image_bitspace(
                 (message_image_height, message_image_width, message_image_channels)
             ), "Image file is to large to hide!"
+
+
             image_bits = self.__encode_image_to_binary(
                 message_image,
                 message_image_height,
                 message_image_width,
                 message_image_channels,
             )
+
+            if as_generator: yield 45
             
             bitlen = self.__return_binary(len(image_bits), 32)
-            format = (
-                Format.PNG.value if format == Format.PNG.value else Format.JPG.value
-            )
+
+
             data = (
                 bitlen
                 + encoding_bin
@@ -408,21 +423,29 @@ class ImageParser:
                 + self.__return_binary(message_image_channels, 8)
                 + image_bits
             )
+
+            if as_generator: yield 50
+
         elif format == Format.MP3.value or format == Format.WAV.value:
             audio_bins = self.encode_audio_to_binary(message_data)
+
+            if as_generator:yield 30
+
             tempbin = audio_bins.__next__()
             sample_rate = self.__audio_samplerate or 44100
             if self.available_bitspace < self.__audio_frames_length * 32:
-                print(
+                raise ValueError(
                     f"Sorry the audio bits is greater the the amount of available signiicant bit in the image. AVAILABE: {self.available_bitspace} EXPECTED {self.__audio_frames_length * 32}"
                 )
-                return
             data = (
                 self.__return_binary(self.__audio_frames_length * 32, 32)
                 + encoding_bin
                 + self.__return_binary(int(sample_rate), 32)
                 + tempbin
             )
+
+
+            if as_generator: yield 50
         else:
             raise ValueError("Please Enter a valid format")
             
@@ -430,12 +453,18 @@ class ImageParser:
             None if format not in [Format.MP3.value, Format.WAV.value] else audio_bins
         )
         encoded_image = self.__encode_image(data, bitstream)
-        filename = os.path.basename(self.dir)
-        filename = filename[: filename.find(".")]
+
+        if as_generator: yield 75
+
+        filename = os.path.basename(self.dir)[: filename.find(".")]
         # print(encoded_image[0][:6], cover_image[0][:6])
+        output_dir = "tmp" if output_dir else output_dir
+
         Image.fromarray(encoded_image.copy()).save(
-            f"encoded-{filename}.png",
+            os.path.join(output_dir, f"encoded-{filename}.png"),
         )
+        
+        if as_generator: yield 100
 
     def decode(self):
         data = self.__decode_image()

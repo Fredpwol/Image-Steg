@@ -13,3 +13,7 @@ test_data
 *.jpg
 *.wav
 *.txt
+
+#local db
+*.db
+*.sqlite3
