@@ -91,16 +91,14 @@
                                     
                                 </div>
 
-                        <form action="/" method="post" enctype="multipart/form-data">  
+                        <form action="/" method="post" enctype="multipart/form-data" name="encode-form">  
                                 <div class="mb-3 ">
                                     
                                     {{ form.file(class='form-control', type='file') }}
                                     {{ form.message(class='form-control mt-3', rows='3')}}
                                 </div>
                                 
-                                {{ form.submit(class='btn btn-outline-warning')}}                    
-
-                            </div>
+                                {{ form.submit(class='btn btn-outline-warning')}}
                         </form>
                     
                         </div>
@@ -130,11 +128,11 @@
                                     <div class="mb-3 ">
                                         {{ deform.file(class='form-control') }}
                                     </div>
-                                    
-                                    {{ deform.submit(class='btn btn-outline-warning')}}                      
-        
-                                </div>
-                                </dform 
+
+                                    <div class="m-4">
+                                        {{ deform.submit(class='btn btn-outline-warning')}}
+                                    </div>
+                            </form >
                         
                             </div>
                         </div>
@@ -179,7 +177,6 @@
                 const FingerprintJS = await fpPromise.load();
     
                 let fp = await FingerprintJS.get();
-                console.log(fp.visitorId);
     
                 const { io } = await import('https://cdn.socket.io/4.4.1/socket.io.esm.min.js');
     
@@ -187,7 +184,6 @@
     
     
                 socket.on("connect", () => {
-                    console.log("Socket connected!!");
                     socket.emit("addUser", {_id : fp.visitorId});
                 });
     
@@ -195,9 +191,19 @@
     
                 })
     
-                socket.on("encode:complete", ({ progress }) => {
-    
+                socket.on("encode:complete", ({ data }) => {
+                    const div = document.createElement("div")
+                    div.className = "p-3"
+                    const encodeForm = document.querySelector("form[name='encode-form']");
+                    const downloadBtn = document.createElement("a");
+                    downloadBtn.download = '';
+                    downloadBtn.href = `{{ url_for('static', filename='image/results/encoded/${data}') }}`
+                    downloadBtn.textContent = "Download Image"
+                    downloadBtn.className = "btn btn-primary"
+                    div.appendChild(downloadBtn)
+                    encodeForm.appendChild(div);
                 })
+
             })();
         </script>
                 
