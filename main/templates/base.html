@@ -172,12 +172,41 @@
                 </section>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" 
                     integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
-        <script src="../static/js/index.js"></script>
+        <script async>
+            // Initialize the agent at application startup.
+            (async function () {
+                const fpPromise = await import('https://openfpcdn.io/fingerprintjs/v3');
+                const FingerprintJS = await fpPromise.load();
+    
+                let fp = await FingerprintJS.get();
+                console.log(fp.visitorId);
+    
+                const { io } = await import('https://cdn.socket.io/4.4.1/socket.io.esm.min.js');
+    
+                const socket = io();
+    
+    
+                socket.on("connect", () => {
+                    console.log("Socket connected!!");
+                    socket.emit("addUser", {_id : fp.visitorId});
+                });
+    
+                socket.on("encode:progress", ({ progress }) => {
+    
+                })
+    
+                socket.on("encode:complete", ({ progress }) => {
+    
+                })
+            })();
+        </script>
+                
+        
     </body>
 
         
 {% endblock %}
-        <!-- JavaScript Bundle with Popper --> 
+    <!-- JavaScript Bundle with Popper -->
    <!-- JavaScript Bundle with Popper -->
     
 </html>
