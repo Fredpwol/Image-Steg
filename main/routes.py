@@ -16,18 +16,6 @@ def check_image_path():
 def home():
     form = EncodeForm(request.form)
     deform = DecodeForm(request.form)
-
-    if form.validate_on_submit():
-        pass
-    
-    if request.method.lower() == "post":
-        print(form.is_submitted(), "submitted", form.validate(),)
-        print ("Submitted!!")
-        f = form.file.data
-        filename = secure_filename(f.filename)
-        print("Path", os.path.join(app.root_path, "images", filename))
-        return redirect("/")
-        f.save()
     return render_template("base.html", form=form, deform = deform)
 
 @app.route("/encode", methods=["GET", "POST"])
@@ -41,3 +29,19 @@ def encode_image():
 def decode_image():
     form = DecodeForm
     return render_template('decode.html', form=form, title = 'Decode Form' )
+
+
+@app.route('/encode-image', methods=['POST'])
+def encode():
+    from service.tasks import encode_text_on_image
+
+    data = request.form
+
+    f = request.files.get('file')
+    img_path = f'main/static/image/temp/encode/{f.filename}'
+    f.save(img_path)
+    payload = data.get("message")
+    client_id = data.get("client_id")
+    
+    encode_text_on_image.delay(img_path, payload, client_id)
+    return "Hello no", 201
