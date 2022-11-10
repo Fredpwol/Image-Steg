@@ -1,5 +1,5 @@
-from main import app
+from main import io, app
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5050)
+    io.run(app, port=5050)

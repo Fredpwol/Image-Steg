@@ -1,9 +1,19 @@
 env
-*.png
-*.jpeg
-*.jpeg
 main/*.txt
 .vscode
 __pycache__
 test_images
 venv
+test_data
+
+# media files
+
+*.png
+*.jpeg
+*.jpg
+*.wav
+*.txt
+
+#local db
+*.db
+*.sqlite3

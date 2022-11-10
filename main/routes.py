@@ -2,6 +2,7 @@ import os
 from main import app
 from flask import request, flash, redirect, render_template
 
+
 from main.form import EncodeForm, DecodeForm
 from werkzeug.utils import secure_filename
 
@@ -16,9 +17,7 @@ def home():
     encode_form = EncodeForm()
     decode_form = DecodeForm()
     
-    #if form.validate_on_submit():
-    #    pass
-        
+    
     
     #if request.method.lower() == "post":
         #print(form.is_submitted(), "submitted", form.validate(),)
