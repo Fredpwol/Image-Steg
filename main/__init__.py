@@ -5,7 +5,7 @@ from flask_socketio import SocketIO
 from settings import CELERY_MESSAGING_QUEUE, SOCKET_IO_MESSAGING_QUEUE
 
 app = Flask(__name__)
-Bootstrap(app)
+
 app.config.from_object(config.Development)
 
 io = SocketIO(app, message_queue=SOCKET_IO_MESSAGING_QUEUE, async_mode="gevent")
