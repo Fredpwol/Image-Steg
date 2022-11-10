@@ -91,14 +91,17 @@
                                     
                                 </div>
 
-                        <form action="/" method="post" enctype="multipart/form-data" name="encode-form">  
+                        <form  name="encode-form"> 
+                                <input type="hidden" name="client_id">
                                 <div class="mb-3 ">
                                     
                                     {{ form.file(class='form-control', type='file') }}
                                     {{ form.message(class='form-control mt-3', rows='3')}}
                                 </div>
-                                
-                                {{ form.submit(class='btn btn-outline-warning')}}
+                                <button class="btn btn-outline-warning" id="encode-submit">
+                                    Encode Image
+                                </button>
+                                <!-- {{ form.submit(class='btn btn-outline-warning')}}-->
                         </form>
                     
                         </div>
@@ -170,6 +173,19 @@
                 </section>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" 
                     integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+        <script>
+            let button = document.getElementById("encode-submit");
+
+
+            button.addEventListener("click", uploadEncodeData)
+            function uploadEncodeData(e){
+                e.preventDefault()
+                const form = document.querySelector("form[name='encode-form']");
+                let data = new FormData(form);
+                fetch('/encode-image', { method: 'POST', body: data}).then(res => res.json()).then(data => console.log(data))
+                form.reset()
+            }
+        </script>
         <script async>
             // Initialize the agent at application startup.
             (async function () {
@@ -177,6 +193,8 @@
                 const FingerprintJS = await fpPromise.load();
     
                 let fp = await FingerprintJS.get();
+
+                document.getElementsByName("client_id")[0].value = fp.visitorId;
     
                 const { io } = await import('https://cdn.socket.io/4.4.1/socket.io.esm.min.js');
     
@@ -184,11 +202,12 @@
     
     
                 socket.on("connect", () => {
+                    console.log("connected")
                     socket.emit("addUser", {_id : fp.visitorId});
                 });
     
                 socket.on("encode:progress", ({ progress }) => {
-    
+                    console.log("encoding progress : " + progress)
                 })
     
                 socket.on("encode:complete", ({ data }) => {
