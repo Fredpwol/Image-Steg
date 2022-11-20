@@ -14,29 +14,9 @@ def check_image_path():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    encode_form = EncodeForm()
-    decode_form = DecodeForm()
-    
-    
-    
-    #if request.method.lower() == "post":
-        #print(form.is_submitted(), "submitted", form.validate(),)
-        #print ("Submitted!!")
-    if encode_form.validate_on_submit():
-        encode_f = encode_form.file.data
-        print(encode_f)
-        filename = secure_filename(encode_f.filename)
-        print("Path", os.path.join(app.root_path, "images", filename))
-        encode_f.save()
-        return redirect("/encode")
-    if decode_form.validate_on_submit():
-        decode_f = decode_form.file.data
-        filename = secure_filename(decode_f.filename)
-        print(request.files)
-        decode_f.save()
-        
-
-    return render_template("base.html", encode_form=encode_form, decode_form = decode_form)
+    form = EncodeForm(request.form)
+    deform = DecodeForm(request.form)
+    return render_template("base.html", encode_form=form, decode_form = deform)
 
 @app.route("/encode", methods=["GET", "POST"])
 def encode_image():
@@ -49,3 +29,19 @@ def encode_image():
 def decode_image():
     form = DecodeForm
     return render_template('decode.html', form=form, title = 'Decode Form' )
+
+
+@app.route('/encode-image', methods=['POST'])
+def encode():
+    from service.tasks import encode_text_on_image
+
+    data = request.form
+
+    f = request.files.get('file')
+    img_path = f'main/static/image/temp/encode/{f.filename}'
+    f.save(img_path)
+    payload = data.get("message")
+    client_id = data.get("client_id")
+    
+    encode_text_on_image.delay(img_path, payload, client_id)
+    return {"status": "Success"}, 201

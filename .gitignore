@@ -1,6 +1,7 @@
 env
 main/*.txt
 .vscode
+.env
 __pycache__
 test_images
 venv
