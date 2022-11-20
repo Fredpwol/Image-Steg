@@ -16,7 +16,7 @@ def check_image_path():
 def home():
     form = EncodeForm(request.form)
     deform = DecodeForm(request.form)
-    return render_template("base.html", form=form, deform = deform)
+    return render_template("base.html", encode_form=form, decode_form = deform)
 
 @app.route("/encode", methods=["GET", "POST"])
 def encode_image():
@@ -44,4 +44,4 @@ def encode():
     client_id = data.get("client_id")
     
     encode_text_on_image.delay(img_path, payload, client_id)
-    return "Hello no", 201
+    return {"status": "Success"}, 201
