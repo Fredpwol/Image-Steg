@@ -1,27 +1,31 @@
 import os
-from flask_socketio import emit
+from flask_socketio import emit, SocketIO
 from flask import url_for
+from settings import SOCKET_IO_MESSAGING_QUEUE
 
 from service import worker
 from steg.algo import ImageParser, Format
 from main import app
 
 
+socketio = SocketIO(message_queue=SOCKET_IO_MESSAGING_QUEUE)
+
+
 @worker.task
 def encode_text_on_image(img_path, text, client_id):
-    with app.app_context():
+    with app.app_context(), app.test_request_context():
         img = ImageParser(img_path)
 
         for prog in img.encode(
-            Format.TXT.value, text, as_generator=True, output_dir="static"
+            Format.TXT.value, text, as_generator=True,
         ):
-            emit("encode:progress", {"progress": prog}, to=client_id)
+            socketio.emit("encode:progress", {"progress": prog}, to=client_id)
 
         filename = os.path.basename(img_path)[: img_path.find(".")]
 
         encoded_image_url = url_for("static", filename=filename, _external=True)
 
-        emit("encode:complete", {"data": encoded_image_url}, to=client_id)
+        socketio.emit("encode:complete", {"data": encoded_image_url}, to=client_id)
 
 
 @worker.task
@@ -37,13 +41,13 @@ def encode_image_on_image(img_path, img, client_id):
         for prog in img.encode(
             image_format, img, as_generator=True, output_dir="static"
         ):
-            emit("encode:progress", {"progress": prog}, to=client_id)
+            socketio.emit("encode:progress", {"progress": prog}, to=client_id)
 
         filename = os.path.basename(img_path)[: img_path.find(".")]
 
         encoded_image_url = url_for("static", filename=filename, _external=True)
 
-        emit("encode:complete", {"data": encoded_image_url}, to=client_id)
+        socketio.emit("encode:complete", {"data": encoded_image_url}, to=client_id)
 
 
 @worker.task
@@ -57,21 +61,10 @@ def encode_audio_on_image(img_path, audio_file, client_id):
         for prog in img.encode(
             image_format, audio_file, as_generator=True, output_dir="static"
         ):
-            emit("encode:progress", {"progress": prog}, to=client_id)
+            socketio.emit("encode:progress", {"progress": prog}, to=client_id)
 
         filename = os.path.basename(img_path)[: img_path.find(".")]
 
         encoded_image_url = url_for("static", filename=filename, _external=True)
 
-        emit("encode:complete", {"data": encoded_image_url}, to=client_id)
-
-@worker.task
-def test_func(n):
-    res = []
-    for i in range(1, n+1):
-        for j in range(1, i // 2):
-            if j * j == i:
-                res.append(i)
-                break
-    print(res)
-
+        socketio.emit("encode:complete", {"data": encoded_image_url}, to=client_id)
