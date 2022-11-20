@@ -16,6 +16,8 @@ import librosa.display
 
 from steg.constants import ENCODING_HEADER_BIT_LEN
 
+from settings import ENCODE_INPUT_DIR, ENCODE_OUTPUT_DIR, DECODE_INPUT_DIR, DECODE_OUTPUT_DIR
+
 
 # we use INT32_MAX for our maximum bit length
 """
@@ -456,9 +458,10 @@ class ImageParser:
 
         if as_generator: yield 75
 
-        filename = os.path.basename(self.dir)[: filename.find(".")]
+        filename = os.path.basename(self.dir)
+        filename = filename[: filename.find(".")]
         # print(encoded_image[0][:6], cover_image[0][:6])
-        output_dir = "tmp" if output_dir else output_dir
+        output_dir = ENCODE_OUTPUT_DIR
 
         Image.fromarray(encoded_image.copy()).save(
             os.path.join(output_dir, f"encoded-{filename}.png"),
