@@ -13,7 +13,7 @@ test_data
 *.jpeg
 *.jpg
 *.wav
-*.txt
+[^=requirements].txt
 
 #local db
 *.db
