@@ -1,8 +1,8 @@
 from flask import Flask
 from main import config
-from flask_bootstrap import Bootstrap
 from flask_socketio import SocketIO
 from settings import CELERY_MESSAGING_QUEUE, SOCKET_IO_MESSAGING_QUEUE
+
 
 app = Flask(__name__)
 
